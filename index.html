@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>In-zen</title>
         <link rel="stylesheet" href="meditation.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.8/simplebar.css"> 
         <link rel="icon" type="image/x-icon" href="./images_sound/meditation.png"
     </head>
     <body>
@@ -31,11 +32,12 @@
         <div class="analysis__stats">
             <span id="number__of__thoughts">Lost Focus: 0</span>
         </div>
-        <div id="analysis__section__container">
-            <div id="analysis__section"></div>
+        <div id="analysis__section"></div>
+        <div id="analysis__section__container" data-simplebar data-simplebar-auto-hide="false">
             <div class="thought__times"></div>
         <div>
         <script src="stopwatch.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.8/simplebar.min.js"></script>
         <script type="module" src="meditation.js"></script>
     </body>
 </html>
