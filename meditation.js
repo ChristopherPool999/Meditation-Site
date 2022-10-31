@@ -9,10 +9,6 @@ let timeOfThoughts = document.querySelector(".thought__times");
 let lostFocusAmount = 0; 
 let lostFocusText = document.querySelector("#number__of__thoughts");
 
-const sideClock = new stopwatch();
-sideClock.seconds = 1000;
-sideClock.countDown();
-
 mainClock.onTimerEnd = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
     audio.play();
@@ -61,9 +57,4 @@ document.addEventListener("keydown", function(input) {
     }
 })
 
-// still has spamming spacebar problem
-// pretty sure spacebar problem is due to the timer being called twice in order to lower the seconds.
-// so for instance if you press if 2x really fast itll increment by -2 instead of -1. so probably what is happening
-// is that setTimer function is getting called twice i think.
-
-// fix scalable div container 
+// fix scalable div container
