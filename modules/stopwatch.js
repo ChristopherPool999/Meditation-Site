@@ -7,23 +7,27 @@ const stopwatch = function() {
     this.isEmpty = true;
     this.onTimerEnd = function() {};
 
+    let clockLoop = null;
     this.countDown = elements => {
         this.isActive = true;
-        let clockLoop = setInterval(() => {
-            if (this.isActive === false) {
-                clearInterval(clockLoop);
-                return;
-            }
-            this.seconds--;
-            if (this.seconds === 0) {
-                this.onTimerEnd();
-                this.reset();
-            }
-            if (elements !== undefined) {
-                this.interface = this.convertToClockFormat(this.seconds);
-                this.updateInterface(elements);
-            }
-        }, 1000);
+        if (clockLoop === null) {
+            clockLoop = setInterval(() => {
+                if (this.isActive === false) {
+                    clearInterval(clockLoop);
+                    clockLoop = null;
+                    return;
+                }
+                this.seconds--;
+                if (this.seconds === 0) {
+                    this.onTimerEnd();
+                    this.reset();
+                }
+                if (elements !== undefined) {
+                    this.interface = this.convertToClockFormat(this.seconds);
+                    this.updateInterface(elements);
+                }
+            }, 1000);
+        }
     } 
 
     this.reset = () => {
