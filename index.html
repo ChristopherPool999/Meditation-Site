@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>In-zen</title>
+        <title>Inzen</title>
         <link rel="stylesheet" href="meditation.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.8/simplebar.css"> 
         <link rel="icon" type="image/x-icon" href="./images_sound/meditation.png"
@@ -11,30 +11,41 @@
     <body>
         <nav id="navbar">
             <img id="site__icon" src="./images_sound/meditation.png">
-            <h1 id="title">In-zen</h1>
-            <span class="tabs">login</span>
-            <span class="tabs">about</span>
-            <span class="tabs">FAQ</span>
+            <h1 id="title">Inzen</h1>
+            <div class="navbar__toggle" id="mobile__menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <div id="navbar__menu">
+                <span class="tabs">login</span>
+                <span class="tabs">about</span>
+                <span class="tabs">FAQ</span>
+            </div>
+            <div id="mobile__dropdown">
+            </div>
         </nav>
+        
         <!-- timer --> 
-        <div id="time__container">
-            <span id="hours1" class="timers">0</span>
-            <span id="hours2" class="timers">0</span>
+        <div id="timer">
+            <span id="hours1" class="time">0</span>
+            <span id="hours2" class="time">0</span>
             <span>:</span>
-            <span id="minutes1" class="timers">0</span>
-            <span id="minutes2" class="timers">0</span>
+            <span id="minutes1" class="time">0</span>
+            <span id="minutes2" class="time">0</span>
             <span>:</span>
-            <span id="seconds1" class="timers">0</span>
-            <span id="seconds2" class="timers">0</span>
+            <span id="seconds1" class="time">0</span>
+            <span id="seconds2" class="time">0</span>
             <button class="play__button__icon"</button>
         </div>
+
         <!-- recorded mindfullness and analysis -->
-        <div class="analysis__stats">
-            <span id="number__of__thoughts">Lost Focus: 0</span>
+        <div class="analysis__header">
+            <span id="lost__focus__count">Lost Focus: 0</span>
         </div>
-        <div id="analysis__section"></div>
-        <div id="analysis__section__container" data-simplebar data-simplebar-auto-hide="false">
-            <div class="thought__times"></div>
+        <div id="analysis__background"></div>
+        <div id="analysis__info__container" data-simplebar data-simplebar-auto-hide="false">
+            <div class="analysis__info"></div>
         <div>
         <script src="stopwatch.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.8/simplebar.min.js"></script>
