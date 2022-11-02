@@ -2,9 +2,10 @@
 import { stopwatch } from "./modules/stopwatch.js";
 
 const clockInterface = document.querySelectorAll(".time");
-const playIconDetermination = document.querySelector(".play__button__icon").classList;
 const timeOfThoughts = document.querySelector(".analysis__info");
 const lostFocusText = document.querySelector("#lost__focus__count");
+const playButtonIconClass = document.querySelector(".play__button__icon").classList;
+const navbarMenuClass = document.querySelector("#navbar__menu").classList;
 const mainClock = new stopwatch();
 let lostFocusAmount = 0; 
 let btnPresses = 0;
@@ -24,7 +25,7 @@ const dynamicEventListener = action => {
         }, 500);
         if (btnPresses === 2) {
             if (mainClock.isActive) {
-                playIconDetermination.toggle("active"); 
+                playButtonIconClass.toggle("active"); 
             }
             mainClock.reset();
             mainClock.updateInterface(clockInterface);
@@ -35,7 +36,7 @@ const dynamicEventListener = action => {
         mainClock.isActive = true;
         mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
         mainClock.countDown(clockInterface);
-        playIconDetermination.toggle("active"); 
+        playButtonIconClass.toggle("active"); 
     }
     else if (action === "Enter" && mainClock.isActive) {
         let recordedTime = mainClock.interface[0] + mainClock.interface[1] + ":" + mainClock.interface[2] + 
@@ -47,7 +48,7 @@ const dynamicEventListener = action => {
     }
     if (action === "Space" && mainClock.hasStarted) {
         mainClock.isActive ? mainClock.isActive = false : mainClock.countDown(clockInterface);
-        playIconDetermination.toggle("active");
+        playButtonIconClass.toggle("active");
     }
 }
 
@@ -60,16 +61,15 @@ document.addEventListener("click", function(event) {
     if (event.target.classList[0] === "play__button__icon") {
         !mainClock.isActive ? dynamicEventListener("Enter") : dynamicEventListener("Space");
     }
+    if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle") {
+        navbarMenuClass.toggle("active");
+    }
 })
-
-if (document.addEventListener("click", function() {
-    console.log("foo");
-}))
 
 mainClock.onTimerEnd = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
     audio.play();
-    playIconDetermination.toggle("active"); 
+    playButtonIconClass.toggle("active"); 
 }
 
 // make responsive

@@ -37,7 +37,6 @@ html {
     font-size: 2rem;
 }
 
- /* start  */
 .navbar__toggle .bar {
     width: 25px;
     height: 3px;
@@ -48,56 +47,57 @@ html {
 }
 
 #mobile__menu {
-    height: 10px;
-    width: 10px;
+    height: 30px;
+    width: 30px;
     position: absolute;
     top: 1%;
-    right: 8%;
-    /* transform: translate(5%, 20%); */
+    right: 4%;
+    cursor: pointer;
 }
 
 #navbar__menu {
     display: grid;
     grid-template-columns: auto;
-    margin: 0;
-    width: 100%;
     position: absolute;
     top: -1000px;
-    transition: all .5s ease;
-    background: rgb(101, 100, 100);
+    left: 100%;
+    transform: translateX(-100%);
     z-index: -1;
-    height: 60vh;
+    height: 10vh;
+    width: 20%;
+    margin: 0;
     font-size: 1rem;
-    color: white;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(270deg, rgba(37,37,37,1) 0%, rgba(25,25,25,1) 50%, rgba(15,15,15,1) 100%); 
+    transition: all .5s ease;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #fff;
 }
 
 #navbar__menu.active {
-    top: 100%;
+    top: 50px;
     z-index: 1;
 }
 
-/* here bruh */
-
 .tabs {
+    height: 20px;
+    color: #fff;
+    margin: auto;
+    font-weight: bold;
     position: relative;
-    left: 70%;
-    transform: translateX(-100%);
     display: flex;
     align-items: center;
-    margin: 20px;
-    padding: 10px 10px;
     border-radius: 10px;
 }
 
 .tabs:hover {
-    background-color: rgb(102, 102, 102);
+    color: grey;
     cursor: pointer;
-    opacity: .7;
     transition: all .4s ease-in-out;
 }
 
 /* timer */
-
 #timer {
     color: white;
     font-size: 3rem;
@@ -140,7 +140,6 @@ html {
 }
 
 /* analysis section */
-
 .analysis__header {
     position: relative;
     top: 100px;
