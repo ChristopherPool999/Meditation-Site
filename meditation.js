@@ -6,6 +6,7 @@ const timeOfThoughts = document.querySelector(".analysis__info");
 const lostFocusText = document.querySelector("#lost__focus__count");
 const playButtonIconClass = document.querySelector(".play__button__icon").classList;
 const navbarMenuClass = document.querySelector("#navbar__menu").classList;
+const mobileDropdownClass = document.querySelector(".navbar__toggle").classList;
 const mainClock = new stopwatch();
 let lostFocusAmount = 0; 
 let btnPresses = 0;
@@ -44,7 +45,7 @@ const dynamicEventListener = action => {
         timeOfThoughts.innerHTML += `<span>
                             ${recordedTime}
                         </span>`;
-        lostFocusText.innerHTML = "Lost focus: " + ++lostFocusAmount;
+        lostFocusText.innerHTML = `${++lostFocusAmount}`;
     }
     if (action === "Space" && mainClock.hasStarted) {
         mainClock.isActive ? mainClock.isActive = false : mainClock.countDown(clockInterface);
@@ -54,7 +55,7 @@ const dynamicEventListener = action => {
 
 document.addEventListener("keydown", function(input) {
     input.code === "Backspace" || input.code === "Space" ? dynamicEventListener(input.code) 
-        : dynamicEventListener(input.key);
+            : dynamicEventListener(input.key);
 })
 
 document.addEventListener("click", function(event) {
@@ -63,7 +64,15 @@ document.addEventListener("click", function(event) {
     }
     if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle") {
         navbarMenuClass.toggle("active");
+        mobileDropdownClass.toggle("active");
     }
+    else if (navbarMenuClass[0] === "active" && event.target.classList[0] !== "tabs" && 
+            event.target.classList[0] !== "active") {
+        navbarMenuClass.toggle("active");
+        mobileDropdownClass.toggle("active");
+    }
+    // if (event.target.classList[0] === "time") { // && screen.width < 1024
+    // }   
 })
 
 mainClock.onTimerEnd = () => {

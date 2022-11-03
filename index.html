@@ -12,14 +12,15 @@
         <nav id="navbar">
             <img id="site__icon" src="./images_sound/meditation.png">
             <h1 id="title">Inzen</h1>
-            <div class="navbar__toggle" id="mobile__menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
+                <div class="navbar__toggle" id="mobile__menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <div class="navbar__toggle__hover__background"></div>
+                </div>
             <div id="navbar__menu">
-                <span class="tabs">login</span>
-                <span class="tabs">about</span>
+                <span class="tabs">Login</span>
+                <span class="tabs">About</span>
                 <span class="tabs">FAQ</span>
             </div>
             <div id="mobile__dropdown">
@@ -41,12 +42,17 @@
 
         <!-- recorded mindfullness and analysis -->
         <div class="analysis__header">
-            <span id="lost__focus__count">Lost Focus: 0</span>
+            <span id="lost__focus">Lost Focus:</span> 
+            <span id="lost__focus__count">0</span> 
+            <!-- Lost Focus: 0 -->
         </div>
         <div id="analysis__background"></div>
         <div id="analysis__info__container" data-simplebar data-simplebar-auto-hide="false">
             <div class="analysis__info"></div>
-        <div>
+        </div>
+        <div id="log__data">
+            <span>Log data</span>
+        </div>
         <script src="stopwatch.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.8/simplebar.min.js"></script>
         <script type="module" src="meditation.js"></script>
