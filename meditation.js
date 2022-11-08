@@ -2,54 +2,58 @@
 import { stopwatch } from "./modules/stopwatch.js";
 
 const clockInterface = document.querySelectorAll(".time");
-const timeOfThoughts = document.querySelector(".analysis__info");
-const lostFocusText = document.querySelector("#lost__focus__count");
-const playButtonIconClass = document.querySelector(".play__button__icon").classList;
-const navbarMenuClass = document.querySelector("#navbar__menu").classList;
-const mobileDropdownClass = document.querySelector(".navbar__toggle").classList;
-const mainClock = new stopwatch();
-let lostFocusAmount = 0; 
+const playButtonIcon = document.querySelector(".play__button__icon").classList;
+const navbarMenu = document.querySelector("#navbar__menu").classList;
+const mobileDropdown = document.querySelector(".navbar__toggle").classList;
+const interfaceContainer = document.querySelector(".timer").classList;
+let interfaceFlash = null;
 let btnPresses = 0;
+const mainClock = new stopwatch();
 
-const dynamicEventListener = action => {
-    if (!isNaN(parseInt(action)) && !mainClock.hasStarted) 
-    if ((action !== "0" || !mainClock.isEmpty)) {
-        mainClock.isEmpty = false;
-        mainClock.setInterface(action, clockInterface);
-        mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
-        mainClock.updateInterface();
-    }
-    if (action === "Backspace" && !mainClock.isEmpty) {
+const dynamicEventListener = input => {
+    if (!isNaN(parseInt(input)) && !mainClock.hasStarted) 
+        if (input !== "0" || !mainClock.isEmpty) {
+            mainClock.isEmpty = false;
+            mainClock.setInterface(input, clockInterface);
+            mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
+            mainClock.updateInterface();
+        }
+    if (input === "Backspace" && !mainClock.isEmpty) {
         btnPresses++;
         setTimeout(function() {
             btnPresses = 0;
         }, 500);
         if (btnPresses === 2) {
             if (mainClock.isActive) {
-                playButtonIconClass.toggle("active"); 
+                playButtonIcon.toggle("active"); 
             }
             mainClock.reset();
             mainClock.updateInterface(clockInterface);
         }
+    }
+    if (input === "Enter" && !mainClock.isActive) {
+        if (mainClock.isEmpty && interfaceFlash === null) {
+            let clockflashAmount = 0;
+            interfaceFlash = setInterval(() => {
+                interfaceContainer.toggle("active");
+                clockflashAmount++;
+                if (clockflashAmount === 4) {
+                    clearInterval(interfaceFlash);
+                    interfaceFlash = null;
+                    return;
+                }
+            }, 500); 
+        } else {
+            mainClock.hasStarted = true;
+            mainClock.isActive = true;
+            mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
+            mainClock.countDown(clockInterface);
+            playButtonIcon.toggle("active"); 
         }
-    if (action === "Enter" && !mainClock.isActive && !mainClock.isEmpty) {
-        mainClock.hasStarted = true;
-        mainClock.isActive = true;
-        mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
-        mainClock.countDown(clockInterface);
-        playButtonIconClass.toggle("active"); 
     }
-    else if (action === "Enter" && mainClock.isActive) {
-        let recordedTime = mainClock.interface[0] + mainClock.interface[1] + ":" + mainClock.interface[2] + 
-                mainClock.interface[3] + ":" + mainClock.interface[4] + mainClock.interface[5];
-        timeOfThoughts.innerHTML += `<span>
-                            ${recordedTime}
-                        </span>`;
-        lostFocusText.innerHTML = `${++lostFocusAmount}`;
-    }
-    if (action === "Space" && mainClock.hasStarted) {
+    if (input === "Space" && mainClock.hasStarted) {
         mainClock.isActive ? mainClock.isActive = false : mainClock.countDown(clockInterface);
-        playButtonIconClass.toggle("active");
+        playButtonIcon.toggle("active");
     }
 }
 
@@ -59,26 +63,27 @@ document.addEventListener("keydown", function(input) {
 })
 
 document.addEventListener("click", function(event) {
-    if (event.target.classList[0] === "play__button__icon") {
+    if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
+                === "play__button__icon__highlight") {
         !mainClock.isActive ? dynamicEventListener("Enter") : dynamicEventListener("Space");
     }
-    if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle") {
-        navbarMenuClass.toggle("active");
-        mobileDropdownClass.toggle("active");
+    if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle" || 
+                event.target.classList[0] === "mobile__menu__highlight") {
+        navbarMenu.toggle("active");
+        mobileDropdown.toggle("active");
     }
-    else if (navbarMenuClass[0] === "active" && event.target.classList[0] !== "tabs" && 
-            event.target.classList[0] !== "active") {
-        navbarMenuClass.toggle("active");
-        mobileDropdownClass.toggle("active");
+    else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs" && 
+                event.target.classList[0] !== "active") {
+        navbarMenu.toggle("active");
+        mobileDropdown.toggle("active");
     }
-    // if (event.target.classList[0] === "time") { // && screen.width < 1024
-    // }   
+    console.log(event.target.classList[0]);
 })
 
 mainClock.onTimerEnd = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
     audio.play();
-    playButtonIconClass.toggle("active"); 
+    playButtonIcon.toggle("active"); 
 }
 
 // make responsive
