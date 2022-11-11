@@ -68,11 +68,11 @@ html {
     top: 1%;
     right: 2%;
     cursor: pointer;
-    z-index: 2;
+    z-index: 3;
     transform: translate(-5px, 10px);
 }
 
-.mobile__menu__highlight {
+.navbar__toggle__highlight {
     position: absolute;
     top: 1%;
     right: 2%;
@@ -84,7 +84,7 @@ html {
     cursor: pointer;
 }
 
-#mobile__menu:hover + .mobile__menu__highlight {
+#mobile__menu:hover + .navbar__toggle__highlight {
     background-color: rgb(77, 77, 77, .7);
 }
 
@@ -146,7 +146,11 @@ html {
     margin-top: 30px;
 }
 
-.timer.active .time {
+.timer span {
+    transition: all .5s ease-in-out;
+}
+
+.timer.active span {
     background-color: rgb(77, 77, 77, .7);
 }
 
@@ -157,8 +161,6 @@ html {
     font-size: 3rem;
     height: 60px;
     display: flex;
-    transition: all .5s ease-in-out;
-    border-radius: 40%;
 }
 
 #clock {

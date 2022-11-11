@@ -43,7 +43,8 @@ const dynamicEventListener = input => {
                     return;
                 }
             }, 500); 
-        } else {
+        }
+        else if (!mainClock.isEmpty) {
             mainClock.hasStarted = true;
             mainClock.isActive = true;
             mainClock.seconds = mainClock.convertToSeconds(mainClock.interface);
@@ -68,12 +69,11 @@ document.addEventListener("click", function(event) {
         !mainClock.isActive ? dynamicEventListener("Enter") : dynamicEventListener("Space");
     }
     if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle" || 
-                event.target.classList[0] === "mobile__menu__highlight") {
+                event.target.classList[0] === "navbar__toggle__highlight") {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
-    else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs" && 
-                event.target.classList[0] !== "active") {
+    else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs") {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
@@ -89,3 +89,8 @@ mainClock.onTimerEnd = () => {
 // make responsive
 // make it better looking --- look into UX design and other timer designs 
 // functionality for FAQ, login, about
+// calendar and tracking
+// cookies to save user information
+// options for music played at end
+// add option to cover timer with a animated curtain
+// consider adding light dark mode 
