@@ -86,11 +86,13 @@ mainClock.onTimerEnd = () => {
     playButtonIcon.toggle("active"); 
 }
 
-// make responsive
-// make it better looking --- look into UX design and other timer designs 
-// functionality for FAQ, login, about
-// calendar and tracking
+// add calendar and tracking
+// implement log data button
 // cookies to save user information
 // options for music played at end
-// add option to cover timer with a animated curtain
-// consider adding light dark mode 
+// cover time with animated curtain
+// functionality for FAQ, login, about
+// light dark mode
+
+// make responsive
+// make it better looking --- look into UX design and other timer designs 
