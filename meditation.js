@@ -1,5 +1,6 @@
 "use strict";
 import { stopwatch } from "./modules/stopwatch.js";
+import { calendarFormat } from "./modules/calendar.js";
 
 const clockInterface = document.querySelectorAll(".time");
 const playButtonIcon = document.querySelector(".play__button__icon").classList;
@@ -85,6 +86,9 @@ mainClock.onTimerEnd = () => {
     audio.play();
     playButtonIcon.toggle("active"); 
 }
+
+console.log(calendarFormat("2022", "11"));
+
 
 // add calendar and tracking
 // implement log data button

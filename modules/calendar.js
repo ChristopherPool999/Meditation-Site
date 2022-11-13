@@ -1,61 +1,38 @@
-// logic
-
-// have a year to store all user meditation data
-// if e.g 2021 doesnt exist dont map any information
-// if 2022 does exist then map information.
-// have array in side 2022 object, for time meditated
-// dynamically create each month (e.g when user clicks next month)
-// map the data we already have
-
-// when dynamically creating each month
-// should be able to make some math equation 
-// to figure out which day is the 1st of the month
-// leap year makes it 1 day ahead
-
-
-const calendar = function() {
-    this.year = 2022;
-    this.firstWeekdayByMonth = [7, 3, 3, 6, 1, 4, 6, 2, 5, 7, 3, 5]; // 1 = sunday. 2 = monday. 3 = tuesday...
-    this.daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    this.month = 11;
-
-    this.nextFirstWeekday = () => {
-        if (++this.month < 13) {
-            return this.firstWeekdayByMonth[this.month - 1];
-        } 
-        this.month = 1;
-        this.year++;
-        if (this.year % 4 !== 0) { // not a leap year
-            for (let i = 0; i < 12; i++) {
-                this.firstWeekdayByMonth[i] < 7 ? this.firstWeekdayByMonth[i] += 1 : this.firstWeekdayByMonth[i] = 1;
-            }
-        } else {
-            for (let i = 0; i < 12; i++) { // is a leap year
-                if (i <= 1) {
-                    this.firstWeekdayByMonth[i] < 7 ? this.firstWeekdayByMonth[i] += 1 : this.firstWeekdayByMonth[i] = 1;
-                } 
-                if (i > 1) {
-                    if (i < 6) {
-                        this.firstWeekdayByMonth[i] += 2;
-                    }
-                    if (i === 6) {
-                        this.firstWeekdayByMonth[i] = 1;
-                    }
-                    if (i === 7) {
-                        this.firstWeekdayByMonth[i] = 2;
-                    } 
-                }
-            }
-        }
-        return this.firstWeekdayByMonth[this.month - 1];
+"use strict"; 
+const calendarFormat = (year, month) => {
+    const date = month && year !== undefined ? new Date(year, month, 1) : new Date();
+    const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if ((date.getFullYear() % 4) === 0) {
+        daysInEachMonth[1] = 29;
     }
+
+    let firstCalendarDate = date.getDate();
+    let weekDay = date.getDay();
+
+    while (firstCalendarDate !== 1) {
+        weekDay > 0 ? weekDay-- : weekDay = 6;
+        firstCalendarDate--;
+    }
+
+    const previousMonthDays = (month) => {
+        return month > 0 ? daysInEachMonth[date.getMonth() - 1] : daysInEachMonth[11];
+    }
+
+    // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
+    firstCalendarDate = previousMonthDays(date.getMonth()) - (weekDay > 0 ? weekDay - 1 : 6);
+    let calendarDays = [];
+    while (firstCalendarDate <= previousMonthDays(date.getMonth())) {
+        calendarDays.push(firstCalendarDate++);                             
+    }
+    firstCalendarDate = 1;
+    while (firstCalendarDate <= daysInEachMonth[date.getMonth()]) {
+        calendarDays.push(firstCalendarDate++);
+    }
+    firstCalendarDate = 1;
+    while (calendarDays.length < 42) {
+        calendarDays.push(firstCalendarDate++);
+    }
+    return [calendarDays, [date.getDate(), date.getMonth(), date.getFullYear()]];
 }
 
-let foo = new calendar();
-
-for (let i = 0; i < 36; i++) {
-    console.log(foo.nextFirstWeekday());
-    console.log(foo.month);
-    console.log(foo.year);
-    console.log("------------------");   
-}
+export { calendarFormat };
