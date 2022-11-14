@@ -7,6 +7,7 @@ const playButtonIcon = document.querySelector(".play__button__icon").classList;
 const navbarMenu = document.querySelector("#navbar__menu").classList;
 const mobileDropdown = document.querySelector(".navbar__toggle").classList;
 const interfaceContainer = document.querySelector(".timer").classList;
+const calendarGrid = document.querySelectorAll(".calendarDates");
 let interfaceFlash = null;
 let btnPresses = 0;
 const mainClock = new stopwatch();
@@ -78,7 +79,6 @@ document.addEventListener("click", function(event) {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
-    console.log(event.target.classList[0]);
 })
 
 mainClock.onTimerEnd = () => {
@@ -87,7 +87,35 @@ mainClock.onTimerEnd = () => {
     playButtonIcon.toggle("active"); 
 }
 
-console.log(calendarFormat("2022", "11"));
+let currentDate;
+let calendarDate;
+changeCalender();
+const changeCalender = direction => {
+    if (direction === undefined) {
+        calendarDate = calendarFormat();
+        currentDate = calendarDate;
+        return;
+    }
+    calendarDate = direction === "left" ? calendarFormat("2022", "10") : calendarFormat("2022", "11"); // code logic
+
+    let isCurrentMonth = false;
+    for (let i = 0; i < 42; i++) {
+        calendarGrid[i].innerHTML = calendarDate[0][i];
+        if (calendarDate[0][i] === 1) {
+            isCurrentMonth = !isCurrentMonth;
+        }
+        if (isCurrentMonth) {
+            calendarGrid[i].style.color = "white";
+        }
+    }
+}
+let todaysDate = [0, 1, 2022] // example
+// pass in same object to module, then it maintains that data and sends out
+// new months data? 
+
+// need calendar days, calendar month calendar year
+// maybe change calendarFormat module to return an object
+
 
 
 // add calendar and tracking

@@ -32,7 +32,14 @@ const calendarFormat = (year, month) => {
     while (calendarDays.length < 42) {
         calendarDays.push(firstCalendarDate++);
     }
-    return [calendarDays, [date.getDate(), date.getMonth(), date.getFullYear()]];
+    return {
+        amountOfDays : [calendarDays],
+        date : newCalender ? date.getDate() : date.getDate(),
+        month : date.getMonth(),
+        year : date.getFullYear(),
+    }
 }
+// return object with property instead of array inside array
+//
 
 export { calendarFormat };
