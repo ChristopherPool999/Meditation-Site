@@ -1,45 +1,78 @@
 "use strict"; 
-const calendarFormat = (year, month) => {
-    const date = month && year !== undefined ? new Date(year, month, 1) : new Date();
-    const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    if ((date.getFullYear() % 4) === 0) {
-        daysInEachMonth[1] = 29;
+const calendar = function() {
+    let date = new Date();
+
+    this.month = date.getMonth();
+    this.year = date.getFullYear();
+    this.todaysDate = [date.getDate(), this.month, this.year];
+
+    this.formatMonthDays = () => {
+        const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        if ((this.year % 4) === 0) {
+            daysInEachMonth[1] = 29;
+        }
+        
+        let calendarDayDate = this.todaysDate[0];
+        let weekDayOfFirst = date.getDay();
+        if (this.month !== this.todaysDate[1] && this.year !== this.todaysDate[2]) {
+            let newDate = new Date(this.month, this.year);
+            calendarDayDate = newDate.getDate();
+            weekDayOfFirst = newDate.getDay();
+        }
+    
+        while (calendarDayDate !== 1) {
+            weekDayOfFirst > 0 ? weekDayOfFirst-- : weekDayOfFirst = 6;
+            calendarDayDate--;
+        }
+    
+        const previousMonthDays = () => {
+            return this.month > 0 ? daysInEachMonth[this.month - 1] : daysInEachMonth[11];
+        }
+    
+        // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
+        calendarDayDate = previousMonthDays() - (weekDayOfFirst > 0 ? weekDayOfFirst - 1 : 6);
+        let calendarDaysFormat = [];
+        while (calendarDayDate <= previousMonthDays(this.month)) {
+            calendarDaysFormat.push(calendarDayDate++);                             
+        }
+        calendarDayDate = 1;
+        while (calendarDayDate <= daysInEachMonth[this.month]) {
+            calendarDaysFormat.push(calendarDayDate++);
+        }
+        calendarDayDate = 1;
+        while (calendarDaysFormat.length < 42) {
+            calendarDaysFormat.push(calendarDayDate++);
+        }
+        this.format = calendarDaysFormat;
+    }
+    this.formatMonthDays();    
+
+    this.calendarHeader = () => {
+        let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
+                "October", "November", "December"];
+        return this.year === this.todaysDate[2] ? [monthNames[this.month]] : [monthNames[this.month], this.year];
+        
     }
 
-    let firstCalendarDate = date.getDate();
-    let weekDay = date.getDay();
-
-    while (firstCalendarDate !== 1) {
-        weekDay > 0 ? weekDay-- : weekDay = 6;
-        firstCalendarDate--;
+    this.previousMonth = () => {
+        if (this.month <= 0) {
+            this.month = 11;
+            this.year--;
+        } else if (this.month > 0) {
+            this.month--;
+        }
+        this.formatMonthDays();
     }
 
-    const previousMonthDays = (month) => {
-        return month > 0 ? daysInEachMonth[date.getMonth() - 1] : daysInEachMonth[11];
-    }
-
-    // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
-    firstCalendarDate = previousMonthDays(date.getMonth()) - (weekDay > 0 ? weekDay - 1 : 6);
-    let calendarDays = [];
-    while (firstCalendarDate <= previousMonthDays(date.getMonth())) {
-        calendarDays.push(firstCalendarDate++);                             
-    }
-    firstCalendarDate = 1;
-    while (firstCalendarDate <= daysInEachMonth[date.getMonth()]) {
-        calendarDays.push(firstCalendarDate++);
-    }
-    firstCalendarDate = 1;
-    while (calendarDays.length < 42) {
-        calendarDays.push(firstCalendarDate++);
-    }
-    return {
-        amountOfDays : [calendarDays],
-        date : newCalender ? date.getDate() : date.getDate(),
-        month : date.getMonth(),
-        year : date.getFullYear(),
+    this.nextMonth = () => {
+        if (this.month >= 11) {
+            this.month = 0;
+            this.year++;
+        } else if (this.month < 11) {
+            this.month++;
+        }
+        this.formatMonthDays();
     }
 }
-// return object with property instead of array inside array
-//
 
-export { calendarFormat };
+export { calendar };

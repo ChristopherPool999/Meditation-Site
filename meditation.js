@@ -1,18 +1,44 @@
 "use strict";
 import { stopwatch } from "./modules/stopwatch.js";
-import { calendarFormat } from "./modules/calendar.js";
+import { calendar } from "./modules/calendar.js";
 
+const calendarGrid = document.querySelectorAll(".calendarDates");
+const monthName = document.querySelector(".calendar__month");
+console.log(monthName);
+const mainCalendar = new calendar();
+
+const changeMonth = direction => { 
+    if (direction !== undefined) {
+        direction === "left" ? mainCalendar.previousMonth() : mainCalendar.nextMonth();
+    }
+    console.log(mainCalendar.month);
+    console.log(mainCalendar.year);
+    monthName.innerHTML = mainCalendar.calendarHeader().join(" ");
+    let isCurrentMonth = false;
+    for (let i = 0; i < 42; i++) {
+        calendarGrid[i].innerHTML = mainCalendar.format[i];
+        if (mainCalendar.format[i] === 1) {
+            isCurrentMonth = !isCurrentMonth;
+        }
+        if (isCurrentMonth) {
+            calendarGrid[i].style.color = "white";
+        }
+    }
+}
+changeMonth();
+
+const interfaceContainer = document.querySelector(".timer").classList;
 const clockInterface = document.querySelectorAll(".time");
 const playButtonIcon = document.querySelector(".play__button__icon").classList;
 const navbarMenu = document.querySelector("#navbar__menu").classList;
 const mobileDropdown = document.querySelector(".navbar__toggle").classList;
-const interfaceContainer = document.querySelector(".timer").classList;
-const calendarGrid = document.querySelectorAll(".calendarDates");
+const mainClock = new stopwatch();
 let interfaceFlash = null;
 let btnPresses = 0;
-const mainClock = new stopwatch();
+// can start the search for a node from another querySelector to improve performance
+// do this after fixing other shit lul
 
-const dynamicEventListener = input => {
+const changeTimer = input => {
     if (!isNaN(parseInt(input)) && !mainClock.hasStarted) 
         if (input !== "0" || !mainClock.isEmpty) {
             mainClock.isEmpty = false;
@@ -60,15 +86,21 @@ const dynamicEventListener = input => {
     }
 }
 
+mainClock.onTimerEnd = () => {
+    let audio = new Audio("./images_sound/alarm.mp3");
+    audio.play();
+    playButtonIcon.toggle("active"); 
+}
+
 document.addEventListener("keydown", function(input) {
-    input.code === "Backspace" || input.code === "Space" ? dynamicEventListener(input.code) 
-            : dynamicEventListener(input.key);
+    input.code === "Backspace" || input.code === "Space" ? changeTimer(input.code) 
+            : changeTimer(input.key);
 })
 
 document.addEventListener("click", function(event) {
     if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
                 === "play__button__icon__highlight") {
-        !mainClock.isActive ? dynamicEventListener("Enter") : dynamicEventListener("Space");
+        !mainClock.isActive ? changeTimer("Enter") : changeTimer("Space");
     }
     if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle" || 
                 event.target.classList[0] === "navbar__toggle__highlight") {
@@ -79,44 +111,15 @@ document.addEventListener("click", function(event) {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
+    if (event.target.classList[0] === "last__month__button") {
+        changeMonth("left");
+        console.log("left");
+    }
+    if (event.target.classList[0] === "next__month__button") {
+        changeMonth("right");
+        console.log("right");
+    }
 })
-
-mainClock.onTimerEnd = () => {
-    let audio = new Audio("./images_sound/alarm.mp3");
-    audio.play();
-    playButtonIcon.toggle("active"); 
-}
-
-let currentDate;
-let calendarDate;
-changeCalender();
-const changeCalender = direction => {
-    if (direction === undefined) {
-        calendarDate = calendarFormat();
-        currentDate = calendarDate;
-        return;
-    }
-    calendarDate = direction === "left" ? calendarFormat("2022", "10") : calendarFormat("2022", "11"); // code logic
-
-    let isCurrentMonth = false;
-    for (let i = 0; i < 42; i++) {
-        calendarGrid[i].innerHTML = calendarDate[0][i];
-        if (calendarDate[0][i] === 1) {
-            isCurrentMonth = !isCurrentMonth;
-        }
-        if (isCurrentMonth) {
-            calendarGrid[i].style.color = "white";
-        }
-    }
-}
-let todaysDate = [0, 1, 2022] // example
-// pass in same object to module, then it maintains that data and sends out
-// new months data? 
-
-// need calendar days, calendar month calendar year
-// maybe change calendarFormat module to return an object
-
-
 
 // add calendar and tracking
 // implement log data button

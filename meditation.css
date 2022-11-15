@@ -227,6 +227,16 @@ html {
     margin-bottom: 3px;
 }
 
+.last__month__button {
+    height: 50px;
+    width: 50px;
+}
+
+.next__month__button {
+    height: 50px;
+    width: 50px;
+}
+
 .calendar {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
