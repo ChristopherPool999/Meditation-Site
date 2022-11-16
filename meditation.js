@@ -2,27 +2,30 @@
 import { stopwatch } from "./modules/stopwatch.js";
 import { calendar } from "./modules/calendar.js";
 
-const calendarGrid = document.querySelectorAll(".calendarDates");
+const calendarGrid = document.querySelectorAll(".calendar__dates");
 const monthName = document.querySelector(".calendar__month");
-console.log(monthName);
 const mainCalendar = new calendar();
 
 const changeMonth = direction => { 
     if (direction !== undefined) {
         direction === "left" ? mainCalendar.previousMonth() : mainCalendar.nextMonth();
     }
-    console.log(mainCalendar.month);
-    console.log(mainCalendar.year);
     monthName.innerHTML = mainCalendar.calendarHeader().join(" ");
     let isCurrentMonth = false;
     for (let i = 0; i < 42; i++) {
+        if (mainCalendar.month === mainCalendar.todaysDate[1] && mainCalendar.year === mainCalendar.todaysDate[2]) {
+            monthName.style.color = "White";
+            if (isCurrentMonth && mainCalendar.format[i] === mainCalendar.todaysDate[0]) {
+                calendarGrid[i].style.backgroundColor = "rgba(173, 173, 173, 0.551)"; 
+            } else {
+                monthName.style.color = "grey";
+            }
+        } 
         calendarGrid[i].innerHTML = mainCalendar.format[i];
         if (mainCalendar.format[i] === 1) {
             isCurrentMonth = !isCurrentMonth;
         }
-        if (isCurrentMonth) {
-            calendarGrid[i].style.color = "white";
-        }
+        isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
     }
 }
 changeMonth();
@@ -89,7 +92,7 @@ const changeTimer = input => {
 mainClock.onTimerEnd = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
     audio.play();
-    playButtonIcon.toggle("active"); 
+    playButtonIcon.toggle("active");
 }
 
 document.addEventListener("keydown", function(input) {
@@ -111,13 +114,11 @@ document.addEventListener("click", function(event) {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
-    if (event.target.classList[0] === "last__month__button") {
+    if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
         changeMonth("left");
-        console.log("left");
     }
-    if (event.target.classList[0] === "next__month__button") {
+    if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
         changeMonth("right");
-        console.log("right");
     }
 })
 

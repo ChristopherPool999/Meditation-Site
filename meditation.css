@@ -133,7 +133,6 @@ html {
     border-radius: 7px;
     background-color: rgb(255, 255, 255, .15);
     cursor: pointer;
-    transition: all .4s ease-in-out;
 }
 
 /* timer */
@@ -211,57 +210,109 @@ html {
     border: none;
 }
 
+/* calendar */
 .calendar__container {
-    max-width: 100vw;
-    height: 250px;
-    transform: translateY(50px);
+    margin: auto;
+    width: 300px;
+    height: 300px;
+    transform: translateY(20px);
 }
 
-.calendar__header{
+.calendar__header {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.calendar__month__container {
+    width: 50%;
+    display: flex;
+    justify-content: center;
     align-items: center;
     color: #fff;
     font-size: 1rem;
     font-weight: bold;
-    margin-bottom: 3px;
 }
 
-.last__month__button {
-    height: 50px;
-    width: 50px;
+.change__month__button {
+    height: 30px;
+    width: 30px;
+    margin: auto;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.next__month__button {
-    height: 50px;
-    width: 50px;
+.change__month__button:hover {
+    background-color: rgba(128, 128, 128, 0.551);
+}
+
+.change__month__button .arrow__bar {
+    height: 1.3px;
+    width: 10px;
+    display: block;
+    background: rgb(255, 255, 255);
+    margin: auto;
+}
+
+#last__month .arrow__bar:nth-child(1) {
+    transform: translateY(10px) rotate(-45deg);
+}
+
+#last__month .arrow__bar:nth-child(2) {
+    transform: translateY(15.5px) rotate(45deg);
+}
+
+#next__month .arrow__bar:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+}
+
+#next__month .arrow__bar:nth-child(2) {
+    transform: translateY(15.5px) rotate(-45deg);
 }
 
 .calendar {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    height: 200px;
+    height: 100%;
+    width: 100%;
 }
 
 .calendar * {
-    margin: auto;
     font-family: 'Times New Roman', Times, serif;
     color: rgb(154, 154, 154);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+.calendar .calendar__dates {
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.calendar .calendar__dates:hover {
+    background-color: rgba(128, 128, 128, 0.551);
+}
+
+/* log data section */
 #log__data {
     font-size: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-left: 50%;
-    transform: translate(-50%, 200px);
+    transform: translate(-50%, 80px);
     height: 140px;
     width: 140px;
+    background-color: rgb(37, 37, 37);
     border-style: solid;
     border-radius: 50%;
     border-color: rgb(255, 255, 255);
+    cursor: pointer;
 }
 
 #log__data > *{

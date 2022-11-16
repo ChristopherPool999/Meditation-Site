@@ -14,8 +14,8 @@ const calendar = function() {
         
         let calendarDayDate = this.todaysDate[0];
         let weekDayOfFirst = date.getDay();
-        if (this.month !== this.todaysDate[1] && this.year !== this.todaysDate[2]) {
-            let newDate = new Date(this.month, this.year);
+        if (this.month !== this.todaysDate[1] || this.year !== this.todaysDate[2]) {
+            let newDate = new Date(this.year, this.month);
             calendarDayDate = newDate.getDate();
             weekDayOfFirst = newDate.getDay();
         }
