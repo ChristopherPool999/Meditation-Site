@@ -1,7 +1,5 @@
 "use strict";
 
-let poopoo = 123;
-
 const stopwatch = function() {
     this.interface = [0, 0, 0, 0, 0, 0];
     this.isActive = false;
@@ -62,12 +60,19 @@ const stopwatch = function() {
     }
 
     // functions for directly changing elements
-    this.setInterface = (input, elementList) => {
-        if (this.interface[0] === 0) {
-            this.interface.shift();
-            this.interface.push(input);
-            this.updateInterface(elementList);
-        }
+    this.addToInterface = (input, clockInterface) => {
+        if (!this.hasStarted) 
+            if (input !== "0" || !this.isEmpty) {
+                this.isEmpty = false;
+                
+                if (this.interface[0] === 0) {
+                    this.interface.shift();
+                    this.interface.push(input);;
+                }
+
+                this.seconds = this.convertToSeconds(this.interface);
+                this.updateInterface(clockInterface);
+            }
     }
 
     this.updateInterface = elementList => {
@@ -78,6 +83,60 @@ const stopwatch = function() {
             elementList[i].innerHTML = this.interface[i];
         }
     }
+
+    {   let deleteConfirmation = false;
+        this.clearInterface = (clockInterface, playButtonIcon) => {
+            if (!this.isEmpty) {
+                setTimeout(function() {
+                    deleteConfirmation = false;
+                }, 500);
+                if (deleteConfirmation) {
+                    if (this.isActive) {
+                        playButtonIcon.toggle("active"); 
+                    }
+                    this.reset(); 
+                    this.updateInterface(clockInterface);
+                }
+                deleteConfirmation = true;
+            }
+        } }
+
+    // can change input === space and just put it on the main file
+    this.pauseInterface = (clockInterface, playButtonIcon) => {
+        if (input === "Space" && this.hasStarted) {
+            this.isActive ? this.isActive = false : this.countDown(clockInterface);
+            playButtonIcon.toggle("active");
+        }
+    }
+
+    
+    {   
+        this.startTimerInterface = (interfaceContainer, playButtonIcon) => {
+            let interfaceFlash = null;
+            if (!this.isActive) {
+                console.log(123);
+                if (this.isEmpty && interfaceFlash === null) {
+                    let clockflashAmount = 0;
+                    interfaceFlash = setInterval(() => {
+                        interfaceContainer.toggle("active");
+                        clockflashAmount++;
+                        if (clockflashAmount === 4) {
+                            clearInterval(interfaceFlash);
+                            interfaceFlash = null;
+                            return;
+                        }
+                    }, 500); 
+                }
+                else if (!this.isEmpty) {
+                    console.log(123);
+                    this.hasStarted = true;
+                    this.isActive = true;
+                    this.seconds = this.convertToSeconds(this.interface);
+                    this.countDown(clockInterface);
+                    playButtonIcon.toggle("active"); 
+                }
+            }
+        } }
 }
 
 export { stopwatch };

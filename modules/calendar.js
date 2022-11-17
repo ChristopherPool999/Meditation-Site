@@ -20,6 +20,7 @@ const calendar = function() {
             weekDayOfFirst = newDate.getDay();
         }
     
+        // change this to just make date = new date(this.month this.year) then itll start at 0 but well have todays date
         while (calendarDayDate !== 1) {
             weekDayOfFirst > 0 ? weekDayOfFirst-- : weekDayOfFirst = 6;
             calendarDayDate--;
@@ -66,7 +67,7 @@ const calendar = function() {
         this.formatMonthDays();
     }
 
-    this.calendarHeader = () => {
+    this.monthHeader = () => {
         let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
                 "October", "November", "December"];
         return this.year === this.todaysDate[2] ? [monthNames[this.month]] : [monthNames[this.month], this.year];
@@ -74,7 +75,7 @@ const calendar = function() {
     }
 
     this.newCalendarInterface = (calendarGrid, monthName) => {
-        monthName.innerHTML = this.calendarHeader().join(" ");
+        monthName.innerHTML = this.monthHeader().join(" ");
         let isCurrentMonth = false;
         for (let i = 0; i < 42; i++) {
             if (this.month === this.todaysDate[1] && this.year === this.todaysDate[2]) {
