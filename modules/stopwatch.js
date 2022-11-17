@@ -1,4 +1,7 @@
 "use strict";
+
+let poopoo = 123;
+
 const stopwatch = function() {
     this.interface = [0, 0, 0, 0, 0, 0];
     this.isActive = false;

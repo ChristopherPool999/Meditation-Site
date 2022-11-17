@@ -1,12 +1,13 @@
-"use strict";
+"use strict";   
 import { stopwatch } from "./modules/stopwatch.js";
 import { calendar } from "./modules/calendar.js";
 
-const calendarGrid = document.querySelectorAll(".calendar__dates");
-const monthName = document.querySelector(".calendar__month");
-const mainCalendar = new calendar();
 
+{ const mainCalendar = new calendar();
 const changeMonth = direction => { 
+
+    const calendarGrid = document.querySelectorAll(".calendar__dates");
+    const monthName = document.querySelector(".calendar__month"); 
     if (direction !== undefined) {
         direction === "left" ? mainCalendar.previousMonth() : mainCalendar.nextMonth();
     }
@@ -28,20 +29,18 @@ const changeMonth = direction => {
         isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
     }
 }
-changeMonth();
+changeMonth(); }
 
-const interfaceContainer = document.querySelector(".timer").classList;
-const clockInterface = document.querySelectorAll(".time");
 const playButtonIcon = document.querySelector(".play__button__icon").classList;
-const navbarMenu = document.querySelector("#navbar__menu").classList;
-const mobileDropdown = document.querySelector(".navbar__toggle").classList;
-const mainClock = new stopwatch();
 let interfaceFlash = null;
 let btnPresses = 0;
-// can start the search for a node from another querySelector to improve performance
-// do this after fixing other shit lul
+const mainClock = new stopwatch(); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
 
 const changeTimer = input => {
+
+    const clockInterface = document.querySelectorAll(".time");
+    const interfaceContainer = document.querySelector(".timer").classList;
+
     if (!isNaN(parseInt(input)) && !mainClock.hasStarted) 
         if (input !== "0" || !mainClock.isEmpty) {
             mainClock.isEmpty = false;
@@ -96,11 +95,15 @@ mainClock.onTimerEnd = () => {
 }
 
 document.addEventListener("keydown", function(input) {
-    input.code === "Backspace" || input.code === "Space" ? changeTimer(input.code) 
+    input.code === "Backspace" || input.code === "Space" ? changeTimer(input.code) mainCalendar
             : changeTimer(input.key);
 })
 
 document.addEventListener("click", function(event) {
+
+    const navbarMenu = document.querySelector("#navbar__menu").classList;
+    const mobileDropdown = document.querySelector(".navbar__toggle").classList;
+
     if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
                 === "play__button__icon__highlight") {
         !mainClock.isActive ? changeTimer("Enter") : changeTimer("Space");

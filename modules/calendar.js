@@ -28,7 +28,6 @@ const calendar = function() {
         const previousMonthDays = () => {
             return this.month > 0 ? daysInEachMonth[this.month - 1] : daysInEachMonth[11];
         }
-    
         // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
         calendarDayDate = previousMonthDays() - (weekDayOfFirst > 0 ? weekDayOfFirst - 1 : 6);
         let calendarDaysFormat = [];
