@@ -2,34 +2,24 @@
 import { stopwatch } from "./modules/stopwatch.js";
 import { calendar } from "./modules/calendar.js";
 
+{ 
+    const mainCalendar = new calendar();
+    let calendarGrid = document.querySelectorAll(".calendar__dates");
+    let monthName = document.querySelector(".calendar__month"); 
 
-{ const mainCalendar = new calendar();
-const changeMonth = direction => { 
+    mainCalendar.newCalendarInterface(calendarGrid, monthName);
 
-    const calendarGrid = document.querySelectorAll(".calendar__dates");
-    const monthName = document.querySelector(".calendar__month"); 
-    if (direction !== undefined) {
-        direction === "left" ? mainCalendar.previousMonth() : mainCalendar.nextMonth();
-    }
-    monthName.innerHTML = mainCalendar.calendarHeader().join(" ");
-    let isCurrentMonth = false;
-    for (let i = 0; i < 42; i++) {
-        if (mainCalendar.month === mainCalendar.todaysDate[1] && mainCalendar.year === mainCalendar.todaysDate[2]) {
-            monthName.style.color = "White";
-            if (isCurrentMonth && mainCalendar.format[i] === mainCalendar.todaysDate[0]) {
-                calendarGrid[i].style.backgroundColor = "rgba(173, 173, 173, 0.551)"; 
-            } else {
-                monthName.style.color = "grey";
-            }
-        } 
-        calendarGrid[i].innerHTML = mainCalendar.format[i];
-        if (mainCalendar.format[i] === 1) {
-            isCurrentMonth = !isCurrentMonth;
+    document.addEventListener("click", function(event) {
+        if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
+            mainCalendar.previousMonth();
+            mainCalendar.newCalendarInterface(calendarGrid, monthName);
         }
-        isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
-    }
+        if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
+            mainCalendar.nextMonth();
+            mainCalendar.newCalendarInterface(calendarGrid, monthName);
+        }
+    })
 }
-changeMonth(); }
 
 const playButtonIcon = document.querySelector(".play__button__icon").classList;
 let interfaceFlash = null;
@@ -95,7 +85,7 @@ mainClock.onTimerEnd = () => {
 }
 
 document.addEventListener("keydown", function(input) {
-    input.code === "Backspace" || input.code === "Space" ? changeTimer(input.code) mainCalendar
+    input.code === "Backspace" || input.code === "Space" ? changeTimer(input.code)
             : changeTimer(input.key);
 })
 
@@ -116,12 +106,6 @@ document.addEventListener("click", function(event) {
     else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs") {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
-    }
-    if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
-        changeMonth("left");
-    }
-    if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
-        changeMonth("right");
     }
 })
 

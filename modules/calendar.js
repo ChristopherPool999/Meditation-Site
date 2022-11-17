@@ -46,13 +46,6 @@ const calendar = function() {
     }
     this.formatMonthDays();    
 
-    this.calendarHeader = () => {
-        let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
-                "October", "November", "December"];
-        return this.year === this.todaysDate[2] ? [monthNames[this.month]] : [monthNames[this.month], this.year];
-        
-    }
-
     this.previousMonth = () => {
         if (this.month <= 0) {
             this.month = 11;
@@ -71,6 +64,33 @@ const calendar = function() {
             this.month++;
         }
         this.formatMonthDays();
+    }
+
+    this.calendarHeader = () => {
+        let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
+                "October", "November", "December"];
+        return this.year === this.todaysDate[2] ? [monthNames[this.month]] : [monthNames[this.month], this.year];
+        
+    }
+
+    this.newCalendarInterface = (calendarGrid, monthName) => {
+        monthName.innerHTML = this.calendarHeader().join(" ");
+        let isCurrentMonth = false;
+        for (let i = 0; i < 42; i++) {
+            if (this.month === this.todaysDate[1] && this.year === this.todaysDate[2]) {
+                monthName.style.color = "white";
+                if (isCurrentMonth && this.format[i] === this.todaysDate[0]) {
+                    calendarGrid[i].style.backgroundColor = "rgba(173, 173, 173, 0.551)"; 
+                } else {
+                    monthName.style.color = "grey";
+                }
+            } 
+            calendarGrid[i].innerHTML = this.format[i];
+            if (this.format[i] === 1) {
+                isCurrentMonth = !isCurrentMonth;
+            }
+            isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
+        }
     }
 }
 
