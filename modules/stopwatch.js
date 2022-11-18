@@ -9,7 +9,7 @@ const stopwatch = function() {
     this.onTimerEnd = function() {};
 
     let clockLoop = null;
-    this.countDown = elements => {
+    this.countDown = () => {
         this.isActive = true;
         if (clockLoop === null) {
             clockLoop = setInterval(() => {
@@ -23,21 +23,35 @@ const stopwatch = function() {
                     this.onTimerEnd();
                     this.reset();
                 }
-                if (elements !== undefined) {
-                    this.interface = this.convertToClockFormat(this.seconds);
-                    this.updateInterface(elements);
-                }
             }, 1000);
         }
     } 
 
-    this.reset = () => {
+    this.reset = elements => {
         this.interface = [0, 0, 0, 0, 0, 0];
         this.isActive = false;
         this.seconds = 0;
         this.isEmpty = true;
         this.hasStarted = false;
+        this.interface = this.convertToClockFormat(this.seconds);
+        this.updateInterface(elements);
     }
+
+    {   let deleteConfirmation = false;
+        this.clearInterface = (clockInterface, playButtonIcon) => {
+            if (!this.isEmpty) {
+                setTimeout(function() {
+                    deleteConfirmation = false;
+                }, 500);
+                if (deleteConfirmation) {
+                    if (this.isActive) {
+                        playButtonIcon.toggle("active"); 
+                    }
+                    this.reset(clockInterface); 
+                }
+                deleteConfirmation = true;
+            }
+        } }
 
     const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // different positions of a timer converted to seconds.
     this.convertToSeconds = clock => {
@@ -84,23 +98,6 @@ const stopwatch = function() {
         }
     }
 
-    {   let deleteConfirmation = false;
-        this.clearInterface = (clockInterface, playButtonIcon) => {
-            if (!this.isEmpty) {
-                setTimeout(function() {
-                    deleteConfirmation = false;
-                }, 500);
-                if (deleteConfirmation) {
-                    if (this.isActive) {
-                        playButtonIcon.toggle("active"); 
-                    }
-                    this.reset(); 
-                    this.updateInterface(clockInterface);
-                }
-                deleteConfirmation = true;
-            }
-        } }
-
     // can change input === space and just put it on the main file
     this.pauseInterface = (clockInterface, playButtonIcon) => {
         if (input === "Space" && this.hasStarted) {
@@ -109,12 +106,9 @@ const stopwatch = function() {
         }
     }
 
-    
-    {   
-        this.startTimerInterface = (interfaceContainer, playButtonIcon) => {
+    {   this.startTimerInterface = (interfaceContainer, playButtonIcon) => {
             let interfaceFlash = null;
             if (!this.isActive) {
-                console.log(123);
                 if (this.isEmpty && interfaceFlash === null) {
                     let clockflashAmount = 0;
                     interfaceFlash = setInterval(() => {
@@ -128,7 +122,6 @@ const stopwatch = function() {
                     }, 500); 
                 }
                 else if (!this.isEmpty) {
-                    console.log(123);
                     this.hasStarted = true;
                     this.isActive = true;
                     this.seconds = this.convertToSeconds(this.interface);

@@ -289,13 +289,21 @@ html {
     align-items: center;
 }
 
-.calendar .calendar__dates {
+.calendar__dates {
     border-radius: 50%;
     cursor: pointer;
 }
 
-.calendar .calendar__dates:hover {
-    background-color: rgba(128, 128, 128, 0.551);
+.calendar__dates:hover {
+    background-color: rgba(70, 70, 70, 0.551);
+}
+
+.calendar__dates.today {
+    background-color: rgba(223, 76, 76);
+}
+
+.calendar__dates.today:hover {
+    background-color: rgba(223, 76, 76);
 }
 
 /* log data section */

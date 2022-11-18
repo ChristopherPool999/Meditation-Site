@@ -6,17 +6,16 @@ import { calendar } from "./modules/calendar.js";
     const mainCalendar = new calendar();
     let calendarGrid = document.querySelectorAll(".calendar__dates");
     let monthName = document.querySelector(".calendar__month"); 
-
-    mainCalendar.newCalendarInterface(calendarGrid, monthName);
+    mainCalendar.changeCalendar(calendarGrid, monthName);
 
     document.addEventListener("click", function(event) {
         if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
             mainCalendar.previousMonth();
-            mainCalendar.newCalendarInterface(calendarGrid, monthName);
+            mainCalendar.changeCalendar(calendarGrid, monthName);
         }
         if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
             mainCalendar.nextMonth();
-            mainCalendar.newCalendarInterface(calendarGrid, monthName);
+            mainCalendar.changeCalendar(calendarGrid, monthName);
         }
     })
 }

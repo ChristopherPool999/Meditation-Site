@@ -1,97 +1,83 @@
 "use strict"; 
 const calendar = function() {
     let date = new Date();
+    const todaysDate = [date.getDate(), date.getMonth(), date.getFullYear()];
 
-    this.month = date.getMonth();
-    this.year = date.getFullYear();
-    this.todaysDate = [date.getDate(), this.month, this.year];
-
-    this.formatMonthDays = () => {
-        const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        if ((this.year % 4) === 0) {
-            daysInEachMonth[1] = 29;
-        }
-        
-        let calendarDayDate = this.todaysDate[0];
-        let weekDayOfFirst = date.getDay();
-        if (this.month !== this.todaysDate[1] || this.year !== this.todaysDate[2]) {
-            let newDate = new Date(this.year, this.month);
-            calendarDayDate = newDate.getDate();
-            weekDayOfFirst = newDate.getDay();
-        }
+    let month = todaysDate[1];
+    let year = todaysDate[2];
+    let calendarFormat;
     
-        // change this to just make date = new date(this.month this.year) then itll start at 0 but well have todays date
-        while (calendarDayDate !== 1) {
-            weekDayOfFirst > 0 ? weekDayOfFirst-- : weekDayOfFirst = 6;
-            calendarDayDate--;
+    let formatCalendar = () => {
+        date = new Date(year, month);
+        const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        if ((year % 4) === 0) {
+            daysInEachMonth[1] = 29;
         }
     
         const previousMonthDays = () => {
-            return this.month > 0 ? daysInEachMonth[this.month - 1] : daysInEachMonth[11];
+            return month > 0 ? daysInEachMonth[month - 1] : daysInEachMonth[11];
         }
         // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
-        calendarDayDate = previousMonthDays() - (weekDayOfFirst > 0 ? weekDayOfFirst - 1 : 6);
+        let calendarDate = previousMonthDays() - (date.getDay() > 0 ? date.getDay() - 1 : 6);
+
         let calendarDaysFormat = [];
-        while (calendarDayDate <= previousMonthDays(this.month)) {
-            calendarDaysFormat.push(calendarDayDate++);                             
+        while (calendarDate <= previousMonthDays(month)) {
+            calendarDaysFormat.push(calendarDate++);                             
         }
-        calendarDayDate = 1;
-        while (calendarDayDate <= daysInEachMonth[this.month]) {
-            calendarDaysFormat.push(calendarDayDate++);
+        calendarDate = 1;
+        while (calendarDate <= daysInEachMonth[month]) {
+            calendarDaysFormat.push(calendarDate++);
         }
-        calendarDayDate = 1;
+        calendarDate = 1;
         while (calendarDaysFormat.length < 42) {
-            calendarDaysFormat.push(calendarDayDate++);
+            calendarDaysFormat.push(calendarDate++);
         }
-        this.format = calendarDaysFormat;
+        calendarFormat = calendarDaysFormat;
     }
-    this.formatMonthDays();    
+    formatCalendar();    
 
-    this.previousMonth = () => {
-        if (this.month <= 0) {
-            this.month = 11;
-            this.year--;
-        } else if (this.month > 0) {
-            this.month--;
-        }
-        this.formatMonthDays();
-    }
-
-    this.nextMonth = () => {
-        if (this.month >= 11) {
-            this.month = 0;
-            this.year++;
-        } else if (this.month < 11) {
-            this.month++;
-        }
-        this.formatMonthDays();
-    }
-
-    this.monthHeader = () => {
-        let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
+    this.changeCalendar = (calendarGrid, monthName) => {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
                 "October", "November", "December"];
-        return this.year === this.todaysDate[2] ? [monthNames[this.month]] : [monthNames[this.month], this.year];
-        
-    }
+        monthName.innerHTML = year === todaysDate[2] ? [monthNames[month]].join(" ") 
+                : [monthNames[month], year].join(" ");
+        month === todaysDate[1] && year === todaysDate[2] ? monthName.style.color = "white" 
+                : monthName.style.color = "grey";
 
-    this.newCalendarInterface = (calendarGrid, monthName) => {
-        monthName.innerHTML = this.monthHeader().join(" ");
+
         let isCurrentMonth = false;
         for (let i = 0; i < 42; i++) {
-            if (this.month === this.todaysDate[1] && this.year === this.todaysDate[2]) {
-                monthName.style.color = "white";
-                if (isCurrentMonth && this.format[i] === this.todaysDate[0]) {
-                    calendarGrid[i].style.backgroundColor = "rgba(173, 173, 173, 0.551)"; 
-                } else {
-                    monthName.style.color = "grey";
-                }
-            } 
-            calendarGrid[i].innerHTML = this.format[i];
-            if (this.format[i] === 1) {
+            calendarGrid[i].innerHTML = calendarFormat[i];
+            if (calendarFormat[i] === 1) {
                 isCurrentMonth = !isCurrentMonth;
             }
             isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
+            if (isCurrentMonth && calendarFormat[i] === todaysDate[0] && year === todaysDate[2] && month === todaysDate[1]) { 
+                calendarGrid[i].classList.toggle("today");
+            } else if (calendarGrid[i].classList[1] === "today") {
+                calendarGrid[i].classList.toggle("today");
+            }
         }
+    }
+
+    this.previousMonth = () => {
+        if (month <= 0) {
+            month = 11;
+            year--;
+        } else if (month > 0) {
+            month--;
+        }
+        formatCalendar();
+    }
+
+    this.nextMonth = () => {
+        if (month >= 11) {
+            month = 0;
+            year++;
+        } else if (month < 11) {
+            month++;
+        }
+        formatCalendar();
     }
 }
 
