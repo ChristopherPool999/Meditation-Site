@@ -2,7 +2,7 @@
 import { stopwatch } from "./modules/stopwatch.js";
 import { calendar } from "./modules/calendar.js";
 
-{ 
+(() => {
     const mainCalendar = new calendar();
     let calendarGrid = document.querySelectorAll(".calendar__dates");
     let monthName = document.querySelector(".calendar__month"); 
@@ -18,9 +18,9 @@ import { calendar } from "./modules/calendar.js";
             mainCalendar.changeCalendar(calendarGrid, monthName);
         }
     })
-}
+})();
 
-{
+(() => {
     const mainClock = new stopwatch(); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
     const clockInterface = document.querySelectorAll(".time");
     const interfaceContainer = document.querySelector(".timer").classList;
@@ -28,6 +28,7 @@ import { calendar } from "./modules/calendar.js";
 
     document.addEventListener("keydown", function(input) {
         if (!isNaN(parseInt(input.key))) {
+            console.log(123);
             mainClock.addToInterface(input.key, clockInterface);
         }
         else if (input.code === "Backspace") {
@@ -54,7 +55,7 @@ import { calendar } from "./modules/calendar.js";
         audio.play();
         playButtonIcon.toggle("active");
     }
-}
+})();
 
 document.addEventListener("click", function(event) {
     const navbarMenu = document.querySelector("#navbar__menu").classList;
