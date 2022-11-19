@@ -1,12 +1,11 @@
 "use strict"; 
-const calendar = function() {
+const calendar = function(calendarGrid, monthName) {
     let date = new Date();
     const todaysDate = [date.getDate(), date.getMonth(), date.getFullYear()];
 
     let month = todaysDate[1];
     let year = todaysDate[2];
-    let calendarFormat;
-    
+
     let formatCalendar = () => {
         date = new Date(year, month);
         const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -32,30 +31,31 @@ const calendar = function() {
         while (calendarDaysFormat.length < 42) {
             calendarDaysFormat.push(calendarDate++);
         }
-        calendarFormat = calendarDaysFormat;
+        return calendarDaysFormat;
     }
-    formatCalendar();    
 
-    this.changeCalendar = (calendarGrid, monthName) => {
+    this.changeCalendar = () => {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
                 "October", "November", "December"];
-        monthName.innerHTML = year === todaysDate[2] ? [monthNames[month]].join(" ") 
+        monthName.innerHTML = year === todaysDate[2] ? monthNames[month] 
                 : [monthNames[month], year].join(" ");
         month === todaysDate[1] && year === todaysDate[2] ? monthName.style.color = "white" 
                 : monthName.style.color = "grey";
 
-
         let isCurrentMonth = false;
+        let calendarFormat = formatCalendar();
         for (let i = 0; i < 42; i++) {
             calendarGrid[i].innerHTML = calendarFormat[i];
             if (calendarFormat[i] === 1) {
                 isCurrentMonth = !isCurrentMonth;
             }
             isCurrentMonth ? calendarGrid[i].style.color = "white" : calendarGrid[i].style.color = "rgb(154, 154, 154)";
-            if (isCurrentMonth && calendarFormat[i] === todaysDate[0] && year === todaysDate[2] && month === todaysDate[1]) { 
-                calendarGrid[i].classList.toggle("today");
-            } else if (calendarGrid[i].classList[1] === "today") {
-                calendarGrid[i].classList.toggle("today");
+            if (isCurrentMonth) {
+                    if (calendarFormat[i] === todaysDate[0] && month === todaysDate[1] && year === todaysDate[2] ) { 
+                        calendarGrid[i].classList.toggle("today");
+                    } else if (calendarGrid[i].classList[1] === "today") {
+                        calendarGrid[i].classList.toggle("today");
+                    }
             }
         }
     }

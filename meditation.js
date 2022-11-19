@@ -3,50 +3,49 @@ import { stopwatch } from "./modules/stopwatch.js";
 import { calendar } from "./modules/calendar.js";
 
 (() => {
-    const mainCalendar = new calendar();
     let calendarGrid = document.querySelectorAll(".calendar__dates");
     let monthName = document.querySelector(".calendar__month"); 
-    mainCalendar.changeCalendar(calendarGrid, monthName);
+    const mainCalendar = new calendar(calendarGrid, monthName);
+    mainCalendar.changeCalendar();
 
     document.addEventListener("click", function(event) {
         if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
             mainCalendar.previousMonth();
-            mainCalendar.changeCalendar(calendarGrid, monthName);
+            mainCalendar.changeCalendar();
         }
         if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
             mainCalendar.nextMonth();
-            mainCalendar.changeCalendar(calendarGrid, monthName);
+            mainCalendar.changeCalendar();
         }
     })
 })();
 
 (() => {
-    const mainClock = new stopwatch(); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
     const clockInterface = document.querySelectorAll(".time");
-    const interfaceContainer = document.querySelector(".timer").classList;
+    const interfaceContainer = document.querySelector(".timer").classList; 
     const playButtonIcon = document.querySelector(".play__button__icon").classList;
+    const mainClock = new stopwatch(clockInterface, playButtonIcon); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
 
     document.addEventListener("keydown", function(input) {
         if (!isNaN(parseInt(input.key))) {
-            console.log(123);
-            mainClock.addToInterface(input.key, clockInterface);
+            mainClock.addToInterface(input.key);
         }
         else if (input.code === "Backspace") {
-            mainClock.clearInterface(clockInterface, playButtonIcon);
+            mainClock.clearInterface();
         }
-        else if (input === "Space") {
-            mainClock.pauseInterface(playButtonIcon);
+        else if (input.code === "Space") {
+            mainClock.pauseInterface();
         }
-        else if (input === "Enter") {
-            mainClock.startTimerInterface(interfaceContainer, playButtonIcon);
+        else if (input.key === "Enter") {
+            mainClock.startTimerInterface(interfaceContainer);
         }
     })
 
     document.addEventListener("click", function(event) {
         if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
                 === "play__button__icon__highlight") {
-            !mainClock.isActive ? mainClock.startTimerInterface(interfaceContainer, playButtonIcon) 
-                    : mainClock.pauseInterface(playButtonIcon);
+            !mainClock.isActive ? mainClock.startTimerInterface(interfaceContainer) 
+                    : mainClock.pauseInterface();
         }
     })
 
