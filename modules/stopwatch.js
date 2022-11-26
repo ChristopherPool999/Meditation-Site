@@ -56,7 +56,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
                 }, 500);
                 if (deleteConfirmation) {
                     if (isActive) {
-                        playButtonIcon.toggle("active"); 
+                        playButtonIcon.toggle("paused"); 
                     }
                     reset(); 
                 }
@@ -107,7 +107,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
     this.pause = () => {
         if (hasStarted) {
             isActive ? isActive = false : countDown();
-            playButtonIcon.toggle("active");
+            playButtonIcon.toggle("paused");
         }
     }
     
@@ -119,7 +119,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
                 hasStarted = true;
                 isActive = true;
                 countDown();
-                playButtonIcon.toggle("active"); 
+                playButtonIcon.toggle("paused"); 
             }
         }
 

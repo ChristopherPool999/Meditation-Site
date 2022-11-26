@@ -1,0 +1,94 @@
+.calendar__container {
+    margin: auto;
+    width: 300px;
+    height: 300px;
+    transform: translateY(5px);
+}
+
+.calendar__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.calendar__month__container {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.change__month__button {
+    height: 30px;
+    width: 30px;
+    margin: auto;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.change__month__button:hover {
+    background-color: rgba(128, 128, 128, 0.551);
+}
+
+.change__month__button .arrow__bar {
+    height: 1.3px;
+    width: 10px;
+    display: block;
+    background: rgb(255, 255, 255);
+    margin: auto;
+    cursor: pointer;
+}
+
+#last__month .arrow__bar:nth-child(1) {
+    transform: translateY(10px) rotate(-45deg);
+}
+
+#last__month .arrow__bar:nth-child(2) {
+    transform: translateY(15.5px) rotate(45deg);
+}
+
+#next__month .arrow__bar:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+}
+
+#next__month .arrow__bar:nth-child(2) {
+    transform: translateY(15.5px) rotate(-45deg);
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    height: 100%;
+    width: 100%;
+}
+
+.calendar * {
+    font-family: 'Times New Roman', Times, serif;
+    color: rgb(154, 154, 154);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar__dates {
+    border-radius: 50%;
+}
+
+.calendar__dates:hover {
+    background-color: rgba(70, 70, 70, 0.551);
+}
+
+.calendar__dates.today {
+    background-color: rgba(223, 76, 76);
+}
+
+.calendar__dates.today:hover {
+    background-color: rgba(223, 76, 76);
+}

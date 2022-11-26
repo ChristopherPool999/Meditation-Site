@@ -9,6 +9,7 @@ import { calendar } from "./modules/calendar.js";
     mainCalendar.changeCalendar();
 
     document.addEventListener("click", event => {
+        console.log(event.target.classList[0]);
         if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
             mainCalendar.previousMonth();
             mainCalendar.changeCalendar();
@@ -23,7 +24,7 @@ import { calendar } from "./modules/calendar.js";
 (() => {
     const clockInterface = document.querySelectorAll(".time");
     const interfaceContainer = document.querySelector(".timer").classList; 
-    const playButtonIcon = document.querySelector(".play__button__icon").classList;
+    const playButtonIcon = document.querySelector(".play__button").classList;
     const mainClock = new stopwatch(clockInterface, playButtonIcon); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
     document.addEventListener("keydown", input => {
         if (!isNaN(parseInt(input.key))) {
@@ -41,9 +42,9 @@ import { calendar } from "./modules/calendar.js";
     })
 
     document.addEventListener("click", event => {
-        if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
-                === "play__button__icon__highlight") {
-            !mainClock.isActive ? mainClock.start(interfaceContainer) 
+        if (event.target.classList[0] === "play__button" || event.target.classList[0]
+                === "play__button__highlight") {
+            !mainClock.checkActive() ? mainClock.start(interfaceContainer) 
                     : mainClock.pause();
         }
     })
@@ -69,6 +70,9 @@ document.addEventListener("click", event => {
         mobileDropdown.toggle("active");
     }
 })
+
+// might add feature where you can tab out for either stopwatch, alarm, or calendar
+// might move away from just meditating and make it a goal or work tracker
 
 // add calendar and tracking
 // implement log data button
