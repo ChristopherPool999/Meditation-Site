@@ -8,7 +8,7 @@ import { calendar } from "./modules/calendar.js";
     const mainCalendar = new calendar(calendarGrid, monthName);
     mainCalendar.changeCalendar();
 
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", event => {
         if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
             mainCalendar.previousMonth();
             mainCalendar.changeCalendar();
@@ -25,27 +25,26 @@ import { calendar } from "./modules/calendar.js";
     const interfaceContainer = document.querySelector(".timer").classList; 
     const playButtonIcon = document.querySelector(".play__button__icon").classList;
     const mainClock = new stopwatch(clockInterface, playButtonIcon); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
-
-    document.addEventListener("keydown", function(input) {
+    document.addEventListener("keydown", input => {
         if (!isNaN(parseInt(input.key))) {
-            mainClock.addToInterface(input.key);
+            mainClock.add(input.key);
         }
         else if (input.code === "Backspace") {
-            mainClock.clearInterface();
+            mainClock.clear();
         }
         else if (input.code === "Space") {
-            mainClock.pauseInterface();
+            mainClock.pause();
         }
         else if (input.key === "Enter") {
-            mainClock.startTimerInterface(interfaceContainer);
+            mainClock.start(interfaceContainer);
         }
     })
 
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", event => {
         if (event.target.classList[0] === "play__button__icon" || event.target.classList[0]
                 === "play__button__icon__highlight") {
-            !mainClock.isActive ? mainClock.startTimerInterface(interfaceContainer) 
-                    : mainClock.pauseInterface();
+            !mainClock.isActive ? mainClock.start(interfaceContainer) 
+                    : mainClock.pause();
         }
     })
 
@@ -56,7 +55,7 @@ import { calendar } from "./modules/calendar.js";
     }
 })();
 
-document.addEventListener("click", function(event) {
+document.addEventListener("click", event => {
     const navbarMenu = document.querySelector("#navbar__menu").classList;
     const mobileDropdown = document.querySelector(".navbar__toggle").classList;
 

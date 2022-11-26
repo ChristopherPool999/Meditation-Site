@@ -17,8 +17,9 @@ const stopwatch = function(clockUi, playButtonIcon) {
         return seconds;
     }
 
-    let clockLoop = null;
+    let clockLoop = null; // maybe we try and fix global var
     let countDown = () => {
+        seconds = timeInSeconds();
         isActive = true;
         if (clockLoop === null) {
             clockLoop = setInterval(() => {
@@ -38,7 +39,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
         }
     } 
 
-    let reset = () => {
+    let reset = () => { // try to combine reset and erase?
         clockLayout = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
@@ -47,8 +48,8 @@ const stopwatch = function(clockUi, playButtonIcon) {
         updateInterface();
     }
 
-    {   let deleteConfirmation = false;
-        this.clearInterface = () => { // use this in other file
+        let deleteConfirmation = false;
+        this.clear = () => { // use this in other file
             if (!isEmpty) {
                 setTimeout(function() {
                     deleteConfirmation = false;
@@ -61,10 +62,10 @@ const stopwatch = function(clockUi, playButtonIcon) {
                 }
                 deleteConfirmation = true;
             }
-        } }
+        }
 
     const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // different positions of a timer converted to seconds.
-    let convertToSeconds = () => {
+    let timeInSeconds = () => {
         let totalSeconds = 0;
         for (let i = 0; i < clockLayout.length; i++) {
             totalSeconds += clockLayout[i] * timerUnitsAsSeconds[i];
@@ -85,60 +86,64 @@ const stopwatch = function(clockUi, playButtonIcon) {
     }
 
     // functions for directly changing elements
-    this.addToInterface = input => { // use this in other file
+    this.add = input => {
         if (!hasStarted && clockLayout[0] === 0) 
             if (input !== "0" || !isEmpty) {
                 isEmpty = false;
                 clockLayout.shift();
                 clockLayout.push(input);
-                seconds = convertToSeconds();
+                seconds = timeInSeconds();
                 updateInterface();
             }
     }
 
     let updateInterface = () => {
         for (let i = 0; i < 6; i++) {
-            if (parseInt(clockUi[i].innerHTML) === clockLayout[i]) {
-                continue;
-            }
             clockUi[i].innerHTML = clockLayout[i];
-        }
+        }       
     }
 
     // can change input === space and just put it on the main file     // use this in other file
-    this.pauseInterface = () => {
+    this.pause = () => {
         if (hasStarted) {
             isActive ? isActive = false : countDown();
             playButtonIcon.toggle("active");
         }
     }
-
-    this.startTimerInterface = interfaceContainer => { 
-        if (!isActive && isEmpty && interfaceFlash === null) {
-            flashIfEmptyTimer(interfaceContainer)
-        }
-        if (!isEmpty && !isActive) {
-            hasStarted = true;
-            isActive = true;
-            seconds = convertToSeconds();
-            countDown();
-            playButtonIcon.toggle("active"); 
-        }
-        }
-    }
-
-    let interfaceFlash = null;
-    let flashIfEmptyTimer = interfaceContainer => {
-        let clockflashAmount = 0;
-        interfaceFlash = setInterval(() => {
-            interfaceContainer.toggle("active");
-            clockflashAmount++;
-            if (clockflashAmount === 4) {
-                clearInterval(interfaceFlash);
-                interfaceFlash = null;
-                return;
+    
+        this.start = interfaceContainer => { 
+            if (!isActive && isEmpty && document.getElementsByClassName) {
+                flashIfEmptyTimer(interfaceContainer)
             }
-        }, 500); 
+            if (!isEmpty && !isActive) {
+                hasStarted = true;
+                isActive = true;
+                countDown();
+                playButtonIcon.toggle("active"); 
+            }
+        }
+
+        let flashIfEmptyTimer = interfaceContainer => {
+            if (interfaceContainer[1] !== "active") {
+                interfaceContainer.toggle("active");
+                setTimeout(() => {
+                    interfaceContainer.toggle("active");
+                }, 500);
+            }
+        }
 }
 
 export { stopwatch };
+
+let flashIfEmptyTimer = interfaceContainer => {
+    let clockflashAmount = 0;
+    interfaceFlash = setInterval(() => {
+        interfaceContainer.toggle("active");
+        clockflashAmount++;
+        if (clockflashAmount === 4) {
+            clearInterval(interfaceFlash);
+            interfaceFlash = null;
+            return;
+        }
+    }, 500); 
+}

@@ -6,7 +6,7 @@ const calendar = function(calendarGrid, monthName) {
     let month = todaysDate[1];
     let year = todaysDate[2];
 
-    let formatCalendar = () => {
+    let getCalendarFormat = () => {
         date = new Date(year, month);
         const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         if ((year % 4) === 0) {
@@ -18,7 +18,6 @@ const calendar = function(calendarGrid, monthName) {
         }
         // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
         let calendarDate = previousMonthDays() - (date.getDay() > 0 ? date.getDay() - 1 : 6);
-
         let calendarDaysFormat = [];
         while (calendarDate <= previousMonthDays(month)) {
             calendarDaysFormat.push(calendarDate++);                             
@@ -43,7 +42,7 @@ const calendar = function(calendarGrid, monthName) {
                 : monthName.style.color = "grey";
 
         let isCurrentMonth = false;
-        let calendarFormat = formatCalendar();
+        let calendarFormat = getCalendarFormat();
         for (let i = 0; i < 42; i++) {
             calendarGrid[i].innerHTML = calendarFormat[i];
             if (calendarFormat[i] === 1) {
@@ -67,7 +66,7 @@ const calendar = function(calendarGrid, monthName) {
         } else if (month > 0) {
             month--;
         }
-        formatCalendar();
+        getCalendarFormat();
     }
 
     this.nextMonth = () => {
@@ -77,7 +76,7 @@ const calendar = function(calendarGrid, monthName) {
         } else if (month < 11) {
             month++;
         }
-        formatCalendar();
+        getCalendarFormat();
     }
 }
 

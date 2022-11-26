@@ -145,12 +145,12 @@ html {
     margin-top: 30px;
 }
 
-.timer span {
-    transition: all .5s ease-in-out;
+.timer.active span {
+    color: rgba(223, 76, 76);
 }
 
-.timer.active span {
-    background-color: rgb(77, 77, 77, .7);
+.timer span {
+    transition: all .8s ease;
 }
 
 .time {
