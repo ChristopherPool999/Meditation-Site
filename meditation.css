@@ -11,8 +11,10 @@ html {
     overflow-x: hidden;
 }
 
+/* navbar start */
 #navbar {
-    position: relative;
+    position: fixed; 
+    transform: translateY(-20px);
     background: rgb(0, 0, 0);
     background: linear-gradient(270deg, rgba(37,37,37,1) 0%, rgba(25,25,25,1) 50%, rgba(15,15,15,1) 100%);
     width: 100%;
@@ -101,7 +103,7 @@ html {
 #navbar__menu {
     display: grid;
     grid-template-columns: auto;
-    position: absolute;
+    position: fixed;
     right: 0%;
     top: -100px;
     height: 120px;
@@ -123,13 +125,13 @@ html {
 }
 
 .tabs {
+    position: relative;
     height: 100%;
     width: 100%;
     color: #fff;
     margin: auto;
     font-weight: bold;
-    position: relative;
-    display: flex;
+    display: grid;
     align-items: center;
     justify-content: center;
     z-index: 3;
@@ -140,6 +142,44 @@ html {
     background-color: rgb(255, 255, 255, .15);
     cursor: pointer;
 }
+/* navbar end */
+
+.feature__selector {
+    position: fixed;
+    display: grid;
+    transform: translateY(50px);    
+    height: 70px;
+    width: 23px;
+    z-index: 4;
+}
+
+.feature__selector * {
+    cursor: pointer;
+    opacity: .6;
+    background-size: cover;
+}
+
+.feature__selector *:hover {
+    background-color: rgb(85, 85, 85);
+}
+
+.feature__selector *.active {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0);
+    cursor: default;
+}
+
+#clock__selector {
+    background-image: url("./images_sound/alarm.png");
+}
+
+#stopwatch__selector {
+    background-image: url("./images_sound/stopwatch.png");
+}
+
+#calendar__selector {
+    background-image: url("./images_sound/calendar.png");
+}
 
 /* log data section */
 #log__data {
@@ -148,7 +188,7 @@ html {
     justify-content: center;
     align-items: center;
     margin-left: 50%;
-    transform: translate(-50%, 60px);
+    transform: translate(-50%, 100px);
     height: 140px;
     width: 140px;
     background-color: rgb(37, 37, 37);

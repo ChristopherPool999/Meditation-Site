@@ -1,6 +1,6 @@
 "use strict";
 
-const stopwatch = function(clockUi, playButtonIcon) {
+const stopwatch = function(clockUi, playButton) {
     let clockLayout = [0, 0, 0, 0, 0, 0];
     let isActive = false;
     let seconds = 0;
@@ -9,7 +9,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
 
     this.onTimerEnd = () => {};
 
-    this.checkActive = () => {
+    this.isActive = () => {
         return isActive;
     }
 
@@ -56,7 +56,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
                 }, 500);
                 if (deleteConfirmation) {
                     if (isActive) {
-                        playButtonIcon.toggle("paused"); 
+                        playButton.toggle("paused"); 
                     }
                     reset(); 
                 }
@@ -107,7 +107,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
     this.pause = () => {
         if (hasStarted) {
             isActive ? isActive = false : countDown();
-            playButtonIcon.toggle("paused");
+            playButton.toggle("paused");
         }
     }
     
@@ -119,7 +119,7 @@ const stopwatch = function(clockUi, playButtonIcon) {
                 hasStarted = true;
                 isActive = true;
                 countDown();
-                playButtonIcon.toggle("paused"); 
+                playButton.toggle("paused"); 
             }
         }
 
@@ -134,16 +134,3 @@ const stopwatch = function(clockUi, playButtonIcon) {
 }
 
 export { stopwatch };
-
-let flashIfEmptyTimer = interfaceContainer => {
-    let clockflashAmount = 0;
-    interfaceFlash = setInterval(() => {
-        interfaceContainer.toggle("active");
-        clockflashAmount++;
-        if (clockflashAmount === 4) {
-            clearInterval(interfaceFlash);
-            interfaceFlash = null;
-            return;
-        }
-    }, 500); 
-}

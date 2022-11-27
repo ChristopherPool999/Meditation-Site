@@ -29,25 +29,36 @@
         </div>
         <!-- feature selector -->
         <div class="feature__selector">
-            <span id="clock"></span>
-            <span id="stopwatch"></span>
-            <span id="calendar"></span>
+            <span id="clock__selector" class="active"></span>
+            <span id="stopwatch__selector"></span>
+            <span id="calendar__selector"></span>
         </div>
         <!-- timer --> 
-        <div class="timer">
-            <span id="hours1" class="time">0</span>
-            <span id="hours2" class="time">0</span>
-            <span>:</span>
-            <span id="minutes1" class="time">0</span>
-            <span id="minutes2" class="time">0</span>
-            <span>:</span>
-            <span id="seconds1" class="time">0</span>
-            <span id="seconds2" class="time">0</span>
-            <button class="play__button"></button>
-            <div class="play__button__highlight"></div>
+        <div class="countdown__container">
+            <div class="timer">
+                <span id="hours1" class="time">0</span>
+                <span id="hours2" class="time">0</span>
+                <span>:</span>
+                <span id="minutes1" class="time">0</span>
+                <span id="minutes2" class="time">0</span>
+                <span>:</span>
+                <span id="seconds1" class="time">0</span>
+                <span id="seconds2" class="time">0</span>
+                <button class="play__button"></button>
+                <div class="play__button__highlight"></div>
+            </div>
+            <div id="log__data">
+                <span>Log data</span>
+            </div>
         </div>
-        <!-- calendar -->
-        <div class="calendar__container">
+        <script src="stopwatch.js"></script>
+        <script type="module" src="meditation.js"></script>
+        <script type="module" src="calendar.js"></script>
+    </body>
+</html>
+
+       <!-- calendar -->
+        <!-- <div class="calendar__container">
             <div class="calendar__header">
                 <div class="change__month__button" id="last__month">
                     <span class="arrow__bar" id="last__month__bar"></span>
@@ -81,13 +92,5 @@
                 <span class="calendar__dates"></span><span class="calendar__dates"></span><span class="calendar__dates"></span>
                 <span class="calendar__dates"></span><span class="calendar__dates"></span><span class="calendar__dates"></span>
             </div>
-        </div>
+        </div> -->
         <!-- log data -->
-        <div id="log__data">
-            <span>Log data</span>
-        </div>
-        <script src="stopwatch.js"></script>
-        <script type="module" src="meditation.js"></script>
-        <script type="module" src="calendar.js"></script>
-    </body>
-</html>
