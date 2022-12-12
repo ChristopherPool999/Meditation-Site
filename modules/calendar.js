@@ -1,5 +1,5 @@
 "use strict"; 
-const calendar = function(calendarGrid, monthName) {
+const simpleCalendar = function(calendarGrid, monthName) {
     let date = new Date();
     const todaysDate = [date.getDate(), date.getMonth(), date.getFullYear()];
 
@@ -80,4 +80,4 @@ const calendar = function(calendarGrid, monthName) {
     }
 }
 
-export { calendar };
+export { simpleCalendar };

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Inzen</title>
         <link rel="stylesheet" href="./modules/calendar.css"/>
-        <link rel="stylesheet" href="./modules/stopwatch.css"/>
+        <link rel="stylesheet" href="./modules/timer.css"/>
         <link rel="stylesheet" href="meditation.css"/>
         <link rel="icon" type="image/x-icon" href="./images_sound/meditation.png"
     </head>
@@ -34,24 +34,11 @@
             <span id="calendar__selector"></span>
         </div>
         <!-- timer --> 
-        <div class="countdown__container">
-            <div class="timer">
-                <span id="hours1" class="time">0</span>
-                <span id="hours2" class="time">0</span>
-                <span>:</span>
-                <span id="minutes1" class="time">0</span>
-                <span id="minutes2" class="time">0</span>
-                <span>:</span>
-                <span id="seconds1" class="time">0</span>
-                <span id="seconds2" class="time">0</span>
-                <button class="play__button"></button>
-                <div class="play__button__highlight"></div>
-            </div>
-            <div id="log__data">
-                <span>Log data</span>
-            </div>
+        <div class="timer__container"></div>
+        <div id="log__data">
+            <span>Log data</span>
         </div>
-        <script src="stopwatch.js"></script>
+        <script src="timer.js"></script>
         <script type="module" src="meditation.js"></script>
         <script type="module" src="calendar.js"></script>
     </body>

@@ -1,33 +1,43 @@
 "use strict";   
-import { stopwatch } from "./modules/stopwatch.js";
-import { calendar } from "./modules/calendar.js";
+import { simpleStopwatch } from "./modules/timer.js";
+import { simpleCalendar } from "./modules/calendar.js";
 
-// (() => {
-//     let calendarGrid = document.querySelectorAll(".calendar__dates");
-//     let monthName = document.querySelector(".calendar__month"); 
-//     const mainCalendar = new calendar(calendarGrid, monthName);
-//     mainCalendar.changeCalendar();
+showCountdown();
+function showCalendar() {
+    let calendarGrid = document.querySelectorAll(".calendar__dates");
+    let monthName = document.querySelector(".calendar__month"); 
+    const mainCalendar = new simpleCalendar(calendarGrid, monthName);
+    mainCalendar.changeCalendar();
 
-//     document.addEventListener("click", event => {
-//         if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
-//             mainCalendar.previousMonth();
-//             mainCalendar.changeCalendar();
-//         }
-//         if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
-//             mainCalendar.nextMonth();
-//             mainCalendar.changeCalendar();
-//         }
-//     })
-// })();
+    document.addEventListener("click", event => {
+        if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
+            mainCalendar.previousMonth();
+            mainCalendar.changeCalendar();
+        }
+        if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
+            mainCalendar.nextMonth();
+            mainCalendar.changeCalendar();
+        }
+    })
+}
 
-(() => {
-    const clockInterface = document.querySelectorAll(".time");
-    const interfaceContainer = document.querySelector(".timer").classList; 
-    const playButton = document.querySelector(".play__button").classList;
-    const mainClock = new stopwatch(clockInterface, playButton); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
-    document.addEventListener("keydown", input => {
+function showCountdown() {
+    const mainClock = new simpleStopwatch(); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
+
+    mainClock.onTimerEnd = () => {
+        let audio = new Audio("./images_sound/alarm.mp3");
+        audio.play();
+        document.querySelector(".play__button").toggle("paused");
+    }
+    document.addEventListener("mousedown", function(event) {
+        if (event.target.classList[0] === "play__button" || event.target.classList[0]
+                === "play__button__highlight") {
+            !mainClock.isActive() ? mainClock.start() : mainClock.pause();
+        }
+    })
+    document.addEventListener("keydown", function(input) {
         if (!isNaN(parseInt(input.key))) {
-            mainClock.add(input.key);
+            mainClock.addTime(input.key);
         }
         else if (input.code === "Backspace") {
             mainClock.clear();
@@ -36,24 +46,10 @@ import { calendar } from "./modules/calendar.js";
             mainClock.pause();
         }
         else if (input.key === "Enter") {
-            mainClock.start(interfaceContainer);
+            mainClock.start();
         }
     })
-
-    document.addEventListener("mousedown", event => {
-        if (event.target.classList[0] === "play__button" || event.target.classList[0]
-                === "play__button__highlight") {
-            !mainClock.isActive() ? mainClock.start(interfaceContainer) 
-                    : mainClock.pause();
-        }
-    })
-
-    mainClock.onTimerEnd = () => {
-        let audio = new Audio("./images_sound/alarm.mp3");
-        audio.play();
-        playButton.toggle("paused");
-    }
-})();
+}
 
 document.addEventListener("click", event => {
     const navbarMenu = document.querySelector("#navbar__menu").classList;
@@ -90,13 +86,13 @@ document.addEventListener("click", event => {
                 event.target.classList.toggle("active");
             }
 
-            function swapFeatures() {
-                if (changeToCalendar.classList[0] === "active") {
-                    let countdownContainer = document.querySelector(".countdown__container");
-                    countdownContainer.style.transition = "all 0.2s";
-                    countdownContainer.style.transform = "translateY(-400px)";
-                }
-            }
+            // function swapFeatures() {
+            //     if (changeToCalendar.classList[0] === "active") {
+            //         let countdownContainer = document.querySelector(".countdown__container");
+            //         countdownContainer.style.transition = "all 0.2s";
+            //         countdownContainer.style.transform = "translateY(-400px)";
+            //     }
+            // }
         }
     }
 })
@@ -106,7 +102,6 @@ document.addEventListener("click", event => {
 // add calendar and tracking
 // implement log data button
 // cookies to save user information
-// cover time with animated curtain
 // functionality for FAQ, login, about
 // light dark mode
 
