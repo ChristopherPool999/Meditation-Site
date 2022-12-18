@@ -14,7 +14,6 @@ html {
 /* navbar start */
 #navbar {
     position: fixed; 
-    transform: translateY(-20px);
     background: rgb(0, 0, 0);
     background: linear-gradient(270deg, rgba(37,37,37,1) 0%, rgba(25,25,25,1) 50%, rgba(15,15,15,1) 100%);
     width: 100%;
@@ -36,7 +35,7 @@ html {
     display: flex;
     align-items: center;
     position: relative;
-    left: 25%;
+    left: 20%;
     font-weight: bold;
     color: white;
     font-size: 2rem;
@@ -146,14 +145,19 @@ html {
 
 .feature__selector {
     position: fixed;
-    display: grid;
-    transform: translateY(50px);    
-    height: 70px;
-    width: 23px;
+    display: flex;  
+    height: 30px;
+    width: 90px;
     z-index: 4;
+    left: 50vw;
+    transform: translate(-57%, 50px);
+    margin: 5px;
+    background: linear-gradient(270deg, rgba(37,37,37,1) 0%, rgba(25,25,25,1) 50%, rgba(15,15,15,1) 100%);
+
 }
 
 .feature__selector * {
+    width: inherit;
     cursor: pointer;
     opacity: .6;
     background-size: cover;
@@ -171,10 +175,12 @@ html {
 
 #clock__selector {
     background-image: url("./images_sound/alarm.png");
+    grid-row: 1;
 }
 
 #stopwatch__selector {
     background-image: url("./images_sound/stopwatch.png");
+    grid-row: 2 ;
 }
 
 #calendar__selector {
@@ -201,4 +207,12 @@ html {
 #log__data > *{
     color: #fff;
     font-weight: bold;
+}
+
+.simple__calendar__container {
+    transform: translateY(100px);
+}
+
+.simple__timer__container {
+    transform: translateY(100px);
 }

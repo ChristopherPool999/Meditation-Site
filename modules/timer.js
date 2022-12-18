@@ -1,57 +1,48 @@
 "use strict";
 
-const simpleStopwatch = function() {
-    let clockLayout = [0, 0, 0, 0, 0, 0];
+const simpleTimer = function() {
+    let clockNumbers = [0, 0, 0, 0, 0, 0];
     let isActive = false;
     let seconds = 0;
     let hasStarted = false;
     let isEmpty = true;
 
     function createTimer(includePlayButton) {
-        let timer = document.createElement("div");
+        const timer = document.createElement("div");
         timer.className = "timer";
-        document.querySelector(".timer__container").appendChild(timer);
+        document.querySelector(".simple__timer__container").appendChild(timer);
 
-        createInterface();
+        createInterface(timer);
         if (includePlayButton) {
-            createPlayButton();
+            createPlayButton(timer);
         }  
-        function createInterface() {
-            let alterIndexNum = 0;
-            for (let i = 0; i < 8; i++) {
-                let interfaceUnit = document.createElement("span");
-                if (i === 2 || i === 5) {
-                    interfaceUnit.innerHTML = ":";
-                    alterIndexNum++;
-                } else {
-                    interfaceUnit.innerHTML = clockLayout[i - alterIndexNum];
-                    interfaceUnit.className = "time";
-                }
-                timer.appendChild(interfaceUnit);
+    }
+    function createInterface(timerElement) {
+        let alterIndexNum = 0;
+        for (let i = 0; i < 8; i++) {
+            const interfaceUnit = document.createElement("span");
+            if (i === 2 || i === 5) {
+                interfaceUnit.innerHTML = ":";
+                alterIndexNum++;
+            } else {
+                interfaceUnit.innerHTML = clockNumbers[i - alterIndexNum];
+                interfaceUnit.className = "time";
             }
+            timerElement.appendChild(interfaceUnit);
         }
-        function createPlayButton() {
-            let playButton = document.createElement("button");
-            let playButtonHighlight = document.createElement("div");
-            playButtonHighlight.className = "play__button__highlight";
-            playButton.className = "play__button";
-            timer.appendChild(playButton);
-            timer.appendChild(playButtonHighlight);
-        }
+    }
+    function createPlayButton(timerElement) {
+        const playButton = document.createElement("button");
+        const playButtonHighlight = document.createElement("div");
+        playButtonHighlight.className = "play__button__highlight";
+        playButton.className = "play__button";
+        timerElement.appendChild(playButton);
+        timerElement.appendChild(playButtonHighlight);
     }
     createTimer(true);
-    
-    this.onTimerEnd = () => {};
-
-    this.isActive = () => {
-        return isActive;
-    }
-    this.getTimeLeft = () => {
-        return seconds;
-    }
 
     let clockLoop = null; // maybe we try and fix global var
-    let countDown = () => {
+    var countDown = () => {
         seconds = timeInSeconds();
         isActive = true;
         if (clockLoop === null) {
@@ -62,7 +53,7 @@ const simpleStopwatch = function() {
                     return;
                 }
                 seconds--;
-                clockLayout = convertToClockFormat();
+                clockNumbers = convertToClockFormat();
                 updateInterface()
                 if (seconds === 0) {
                     this.onTimerEnd();
@@ -71,38 +62,23 @@ const simpleStopwatch = function() {
             }, 1000);
         }
     } 
-    let reset = () => { // try to combine reset and erase?
-        clockLayout = [0, 0, 0, 0, 0, 0];
+    var reset = () => { // try to combine reset and erase?
+        clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
         isEmpty = true;
         hasStarted = false;
         updateInterface();
     }
-    let deleteConfirmation = false;
-    this.clear = () => {
-        if (!isEmpty) {
-            setTimeout(function() {
-                deleteConfirmation = false;
-            }, 500);
-            if (deleteConfirmation) {
-                if (isActive) {
-                    document.querySelector(".play__button").classList.toggle("paused"); 
-                }
-                reset(); 
-            }
-            deleteConfirmation = true;
-        }
-    }
     const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // different positions of a timer converted to seconds.
-    let timeInSeconds = () => {
+    var timeInSeconds = () => {
         let totalSeconds = 0;
-        for (let i = 0; i < clockLayout.length; i++) {
-            totalSeconds += clockLayout[i] * timerUnitsAsSeconds[i];
+        for (let i = 0; i < clockNumbers.length; i++) {
+            totalSeconds += clockNumbers[i] * timerUnitsAsSeconds[i];
         }
         return totalSeconds;
     }
-    let convertToClockFormat = () => {
+    var convertToClockFormat = () => {
         let secondsCopy = seconds;
         let newTimer = [0, 0, 0, 0, 0, 0];
         for (let i = 0; i < newTimer.length; i++) {
@@ -113,20 +89,21 @@ const simpleStopwatch = function() {
         }
         return newTimer;
     }
-    this.addTime = input => {
-        if (!hasStarted && clockLayout[0] === 0) 
-            if (input !== "0" || !isEmpty) {
-                isEmpty = false;
-                clockLayout.shift();
-                clockLayout.push(input);
-                seconds = timeInSeconds();
-                updateInterface();
-            }
+    var updateInterface = () => {
+        if (document.querySelectorAll(".time").length) {
+            for (let i = 0; i < 6; i++) {
+                document.querySelectorAll(".time")[i].innerHTML = clockNumbers[i];
+            }  
+        }     
     }
-    let updateInterface = () => {
-        for (let i = 0; i < 6; i++) {
-            document.querySelectorAll(".time")[i].innerHTML = clockLayout[i];
-        }       
+    var flashIfEmptyTimer = () => {
+        let interfaceContainer = document.querySelector(".timer").classList; 
+        if (interfaceContainer[1] !== "active") {
+            interfaceContainer.toggle("active");
+            setTimeout(() => {
+                interfaceContainer.toggle("active");
+            }, 500);
+        }
     }
     this.pause = () => {
         if (hasStarted) {
@@ -145,14 +122,38 @@ const simpleStopwatch = function() {
             document.querySelector(".play__button").classList.toggle("paused"); 
         }
     }
-    let flashIfEmptyTimer = () => {
-        let interfaceContainer = document.querySelector(".timer").classList; 
-        if (interfaceContainer[1] !== "active") {
-            interfaceContainer.toggle("active");
-            setTimeout(() => {
-                interfaceContainer.toggle("active");
+    this.addTime = input => {
+        if (!hasStarted && clockNumbers[0] === 0) 
+            if (input !== "0" || !isEmpty) {
+                isEmpty = false;
+                clockNumbers.shift();
+                clockNumbers.push(input);
+                seconds = timeInSeconds();
+                updateInterface();
+            }
+    }
+    let clearAttempts = 0;
+    this.clear = () => {
+        if (!isEmpty) {
+            clearAttempts++;
+            setTimeout(function() {
+                clearAttempts = 0;
             }, 500);
+            if (clearAttempts === 2) {
+                if (isActive) {
+                    document.querySelector(".play__button").classList.toggle("paused"); 
+                }
+                reset(); 
+            }
         }
+    }   
+    this.onTimerEnd = () => {};
+
+    this.isActive = () => {
+        return isActive;
+    }
+    this.getTimeLeft = () => {
+        return seconds;
     }
 }
-export { simpleStopwatch };
+export { simpleTimer };
