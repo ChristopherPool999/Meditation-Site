@@ -6,41 +6,8 @@ const simpleTimer = function() {
     let seconds = 0;
     let hasStarted = false;
     let isEmpty = true;
-
-    function createTimer(includePlayButton) {
-        const timer = document.createElement("div");
-        timer.className = "timer";
-        document.querySelector(".simple__timer__container").appendChild(timer);
-
-        createInterface(timer);
-        if (includePlayButton) {
-            createPlayButton(timer);
-        }  
-    }
-    function createInterface(timerElement) {
-        let alterIndexNum = 0;
-        for (let i = 0; i < 8; i++) {
-            const interfaceUnit = document.createElement("span");
-            if (i === 2 || i === 5) {
-                interfaceUnit.innerHTML = ":";
-                alterIndexNum++;
-            } else {
-                interfaceUnit.innerHTML = clockNumbers[i - alterIndexNum];
-                interfaceUnit.className = "time";
-            }
-            timerElement.appendChild(interfaceUnit);
-        }
-    }
-    function createPlayButton(timerElement) {
-        const playButton = document.createElement("button");
-        const playButtonHighlight = document.createElement("div");
-        playButtonHighlight.className = "play__button__highlight";
-        playButton.className = "play__button";
-        timerElement.appendChild(playButton);
-        timerElement.appendChild(playButtonHighlight);
-    }
-    createTimer(true);
-
+    let handlers = [];
+    
     let clockLoop = null; // maybe we try and fix global var
     var countDown = () => {
         seconds = timeInSeconds();
@@ -62,7 +29,7 @@ const simpleTimer = function() {
             }, 1000);
         }
     } 
-    var reset = () => { // try to combine reset and erase?
+    var reset = () => { 
         clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
@@ -78,6 +45,10 @@ const simpleTimer = function() {
         }
         return totalSeconds;
     }
+    var clockTime = () => {
+        return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
+        + ":" + clockNumbers[4] +  clockNumbers[5];
+    }
     var convertToClockFormat = () => {
         let secondsCopy = seconds;
         let newTimer = [0, 0, 0, 0, 0, 0];
@@ -88,13 +59,9 @@ const simpleTimer = function() {
             }
         }
         return newTimer;
-    }
+    }    
     var updateInterface = () => {
-        if (document.querySelectorAll(".time").length) {
-            for (let i = 0; i < 6; i++) {
-                document.querySelectorAll(".time")[i].innerHTML = clockNumbers[i];
-            }  
-        }     
+            document.querySelector(".time").innerHTML = clockTime();
     }
     var flashIfEmptyTimer = () => {
         let interfaceContainer = document.querySelector(".timer").classList; 
@@ -154,6 +121,44 @@ const simpleTimer = function() {
     }
     this.getTimeLeft = () => {
         return seconds;
+    }
+    this.createClock = () => {
+        document.querySelector(".simple__calendar__container").innerHTML = `
+        <div class="timer">
+            <span class="time">${clockTime()}</span>
+            <button class="play__button"></button>
+            <div class="play__button__highlight"></div>
+        </div>`;
+
+        var mouseDownHandler = event => {
+            if (event.target.classList[0] === "play__button" || event.target.classList[0]
+                    === "play__button__highlight") {
+                !this.isActive() ? this.start() : this.pause();
+            }
+        }
+        var keydownHandler = input => {
+            if (!isNaN(parseInt(input.key))) {
+                this.addTime(input.key);
+            }
+            else if (input.code === "Backspace") {
+                this.clear();
+            }
+            else if (input.code === "Space") {
+                this.pause();
+            }
+            else if (input.key === "Enter") {
+                this.start();
+            }
+        }
+        document.addEventListener("mousedown", mouseDownHandler);
+        document.addEventListener("keydown", keydownHandler);
+        handlers.push(mouseDownHandler);
+        handlers.push(keydownHandler);
+    }
+    this.removeHandlers = () => {
+        document.removeEventListener("mousedown", handlers[0]);
+        document.removeEventListener("keydown", handlers[1]);
+        handlers = [];
     }
 }
 export { simpleTimer };

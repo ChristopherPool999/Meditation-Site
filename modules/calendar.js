@@ -2,7 +2,6 @@
 import { createCalendarHtml } from "./calendarHtmlFormat.js";
 const simpleCalendar = function() {
 
-    createCalendarHtml();
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
             "October", "November", "December"];
     const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -10,20 +9,11 @@ const simpleCalendar = function() {
     const todaysDate = [selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear()];
     let selectedMonth = todaysDate[1];
     let selectedYear = todaysDate[2];
-    updateCalendar();
 
-    function updateCalendar() {
-        const calendarNode = document.querySelector(".simple__calendar__container");
-        const calendarCopy = document.createDocumentFragment();
-        calendarCopy.appendChild(calendarNode.cloneNode(true));
-        const calendarGrid = calendarCopy.querySelectorAll(".calendar__dates");
-        const monthName = calendarCopy.querySelector(".calendar__month");
-
-        updateMonth(monthName);
-        updateDates(calendarGrid);
-        document.body.replaceChild(calendarCopy, document.querySelector(".simple__calendar__container"));
+    var previousMonthDays = () => {
+        return selectedMonth > 0 ? daysInEachMonth[selectedMonth - 1] : daysInEachMonth[11];
     }
-    function getCalendarFormat() {
+    var getCalendarFormat = () => {
         selectedDate.setFullYear(selectedYear, selectedMonth, 1);
         if ((selectedYear % 4) === 0) {
             daysInEachMonth[1] = 29;
@@ -44,16 +34,7 @@ const simpleCalendar = function() {
         }
         return calendarDaysFormat;
     }
-    function previousMonthDays() {
-        return selectedMonth > 0 ? daysInEachMonth[selectedMonth - 1] : daysInEachMonth[11];
-    }
-    function updateMonth(monthElement) {
-        monthElement.innerHTML = (selectedYear === todaysDate[2]) ? 
-                monthNames[selectedMonth] : [monthNames[selectedMonth], selectedYear].join(" ");
-        (selectedMonth === todaysDate[1] && selectedYear === todaysDate[2]) ? 
-                monthElement.style.color = "white" : monthElement.style.color = "grey";
-    }
-    function updateDates(grid) {
+    var updateDates = grid => {
         let isCurrentMonth = false;
         const calendarDays = getCalendarFormat();
         for (let i = 0; i < 42; i++) {
@@ -72,7 +53,13 @@ const simpleCalendar = function() {
             }
         }
     }
-    this.previousMonth = () => {
+    var updateHeader = monthElement => {
+        monthElement.innerHTML = (selectedYear === todaysDate[2]) ? 
+                monthNames[selectedMonth] : [monthNames[selectedMonth], selectedYear].join(" ");
+        (selectedMonth === todaysDate[1] && selectedYear === todaysDate[2]) ? 
+                monthElement.style.color = "white" : monthElement.style.color = "grey";
+    }
+    var previousMonth = () => {
         if (selectedMonth <= 0) {
             selectedMonth = 11;
             selectedYear--;
@@ -81,13 +68,38 @@ const simpleCalendar = function() {
         }
         updateCalendar();
     }
-    this.nextMonth = () => {
+    var nextMonth = () => {
         if (selectedMonth >= 11) {
             selectedMonth = 0;
             selectedYear++;
         } else if (selectedMonth < 11) {
             selectedMonth++;
         }
+        updateCalendar();
+    }
+    var updateCalendar = () => {
+        const calendarNode = document.querySelector(".simple__calendar__container");
+        const calendarCopy = document.createDocumentFragment();
+        calendarCopy.appendChild(calendarNode.cloneNode(true));
+
+        const calendarGrid = calendarCopy.querySelectorAll(".calendar__dates");
+        const monthName = calendarCopy.querySelector(".calendar__month");
+        updateHeader(monthName);
+        updateDates(calendarGrid);
+        document.body.replaceChild(calendarCopy, document.querySelector(".simple__calendar__container"));
+
+        const calendarHeader = document.querySelector(".calendar__header");
+        calendarHeader.addEventListener("click", event => {
+            if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
+                previousMonth();
+            }
+            if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
+                nextMonth();
+            }
+        })
+    }
+    this.createCalendar = () => {
+        createCalendarHtml();
         updateCalendar();
     }
 }

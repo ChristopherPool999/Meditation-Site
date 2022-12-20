@@ -2,48 +2,13 @@
 import { simpleTimer } from "./modules/timer.js";
 import { simpleCalendar } from "./modules/calendar.js";
 
-showCountdown();
-function showCalendar() {
-    const mainCalendar = new simpleCalendar();
-    document.addEventListener("click", event => {
-        if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
-            mainCalendar.previousMonth();
-        }
-        if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
-            mainCalendar.nextMonth();
-        }
-    })
-}
-
-function showCountdown() {
-    const mainClock = new simpleTimer(); // can start the search for a node from another querySelector to improve performance do this after fixing other shit lul
-    mainClock.onTimerEnd = () => {
-        let audio = new Audio("./images_sound/alarm.mp3");
-        audio.play();
-        document.querySelector(".play__button").toggle("paused");
-    }
-    let timer = document.querySelector(".timer");
-    timer.addEventListener("keydown", event => {
-        if (event.target.classList[0] === "play__button" || event.target.classList[0]
-                === "play__button__highlight") {
-            !mainClock.isActive() ? mainClock.start() : mainClock.pause();
-        }
-    })
-    var timerKeyHandler = function(input) {
-        if (!isNaN(parseInt(input.key))) {
-            mainClock.addTime(input.key);
-        }
-        else if (input.code === "Backspace") {
-            mainClock.clear();
-        }
-        else if (input.code === "Space") {
-            mainClock.pause();
-        }
-        else if (input.key === "Enter") {
-            mainClock.start();
-        }
-    }
-    document.addEventListener("keydown", timerKeyHandler);
+const calendar = new simpleCalendar();
+const mainClock = new simpleTimer();
+mainClock.createClock();
+mainClock.onTimerEnd = () => {
+    let audio = new Audio("./images_sound/alarm.mp3");
+    audio.play();
+    document.querySelector(".play__button").toggle("paused");
 }
 
 document.addEventListener("click", event => {
@@ -95,19 +60,21 @@ document.addEventListener("click", event => {
                 }
             }
             function getNewFunctionality() {
+                mainClock.removeHandlers();
                 if (event.target.id === "clock__selector") {
-                    showCountdown();   
+                    mainClock.createClock();
                 }
                 if (event.target.id === "stopwatch__selector") {
-                    // placeholder
                 }
                 if (event.target.id === "calendar__selector") {
-                    showCalendar();
+                    calendar.createCalendar();
                 }
             }
         }
     }
 })
+
+// play button doesnt get reset after chaning functionality
 
 // gotta add opitimation for query selector
 // gotta also change all event listeners to be on specific nodes
