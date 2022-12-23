@@ -7,28 +7,37 @@ const simpleTimer = function() {
     let hasStarted = false;
     let isEmpty = true;
     let handlers = [];
-    
-    let clockLoop = null; // maybe we try and fix global var
-    var countDown = () => {
-        seconds = timeInSeconds();
-        isActive = true;
-        if (clockLoop === null) {
-            clockLoop = setInterval(() => {
-                if (isActive === false) {
-                    clearInterval(clockLoop);
-                    clockLoop = null;
-                    return;
-                }
-                seconds--;
-                clockNumbers = convertToClockFormat();
-                updateInterface()
-                if (seconds === 0) {
-                    this.onTimerEnd();
-                    reset();
-                }
-            }, 1000);
+
+    {   
+        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+        var timeInSeconds = () => {
+            let totalSeconds = 0;
+            for (let i = 0; i < clockNumbers.length; i++) {
+                totalSeconds += clockNumbers[i] * timerUnitsAsSeconds[i];
+            }
+            return totalSeconds;
         }
-    } 
+        var timeInClockFormat = () => {
+            let secondsCopy = seconds;
+            let newTimer = [0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < newTimer.length; i++) {
+                if (secondsCopy >= timerUnitsAsSeconds[i]) {
+                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
+                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+                }
+            }
+            return newTimer;
+        }   
+    }
+    var clockTime = () => {
+        return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
+        + ":" + clockNumbers[4] +  clockNumbers[5];
+    }
+    var updateInterface = () => {
+        if (document.querySelector(".simple__timer__container").firstChild) {
+            document.querySelector(".time").innerHTML = clockTime();
+        }
+    }
     var reset = () => { 
         clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
@@ -36,32 +45,28 @@ const simpleTimer = function() {
         isEmpty = true;
         hasStarted = false;
         updateInterface();
-    }
-    const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // different positions of a timer converted to seconds.
-    var timeInSeconds = () => {
-        let totalSeconds = 0;
-        for (let i = 0; i < clockNumbers.length; i++) {
-            totalSeconds += clockNumbers[i] * timerUnitsAsSeconds[i];
-        }
-        return totalSeconds;
-    }
-    var clockTime = () => {
-        return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
-        + ":" + clockNumbers[4] +  clockNumbers[5];
-    }
-    var convertToClockFormat = () => {
-        let secondsCopy = seconds;
-        let newTimer = [0, 0, 0, 0, 0, 0];
-        for (let i = 0; i < newTimer.length; i++) {
-            if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+    }  
+    { 
+        let clockLoop = null;
+        var countDown = () => {
+            isActive = true;
+            if (clockLoop === null) {
+                clockLoop = setInterval(() => {
+                    seconds--;
+                    clockNumbers = timeInClockFormat();
+                    updateInterface();
+                    if (seconds === 0) {
+                        this.onTimerEnd();
+                        reset();
+                    }
+                    if (!isActive) {
+                        clearInterval(clockLoop);
+                        clockLoop = null;
+                        return;
+                    }
+                }, 1000);
             }
         }
-        return newTimer;
-    }    
-    var updateInterface = () => {
-            document.querySelector(".time").innerHTML = clockTime();
     }
     var flashIfEmptyTimer = () => {
         let interfaceContainer = document.querySelector(".timer").classList; 
@@ -72,13 +77,13 @@ const simpleTimer = function() {
             }, 500);
         }
     }
-    this.pause = () => {
+    var pause = () => {
         if (hasStarted) {
             isActive ? isActive = false : countDown();
-            document.querySelector(".play__button").classList.toggle("paused");
+            document.querySelector(".play__button").classList.toggle("active");
         }
     }
-    this.start = () => {
+    var start = () => {
         if (!isActive && isEmpty) {
             flashIfEmptyTimer()
         }
@@ -86,10 +91,10 @@ const simpleTimer = function() {
             hasStarted = true;
             isActive = true;
             countDown();
-            document.querySelector(".play__button").classList.toggle("paused"); 
+            document.querySelector(".play__button").classList.toggle("active"); 
         }
     }
-    this.addTime = input => {
+    var addTime = input => {
         if (!hasStarted && clockNumbers[0] === 0) 
             if (input !== "0" || !isEmpty) {
                 isEmpty = false;
@@ -99,23 +104,26 @@ const simpleTimer = function() {
                 updateInterface();
             }
     }
-    let clearAttempts = 0;
-    this.clear = () => {
-        if (!isEmpty) {
-            clearAttempts++;
-            setTimeout(function() {
-                clearAttempts = 0;
-            }, 500);
-            if (clearAttempts === 2) {
-                if (isActive) {
-                    document.querySelector(".play__button").classList.toggle("paused"); 
+    { 
+        let clearAttempts = 0;
+        var clear = () => {
+            if (!isEmpty) {
+                clearAttempts++;
+                setTimeout(function() {
+                    clearAttempts = 0;
+                }, 500);
+                if (clearAttempts === 2) {
+                    if (isActive) {
+                        document.querySelector(".play__button").classList.toggle("active"); 
+                    }
+                    reset(); 
                 }
-                reset(); 
             }
         }
     }   
-    this.onTimerEnd = () => {};
-
+    this.onTimerEnd = callback => {
+        callback();
+    }
     this.isActive = () => {
         return isActive;
     }
@@ -123,31 +131,32 @@ const simpleTimer = function() {
         return seconds;
     }
     this.createClock = () => {
-        document.querySelector(".simple__calendar__container").innerHTML = `
+        const playBtnActive = isActive ? "play__button active" : "play__button";
+        document.querySelector(".simple__timer__container").innerHTML = `
         <div class="timer">
             <span class="time">${clockTime()}</span>
-            <button class="play__button"></button>
+            <button class="${playBtnActive}"></button>
             <div class="play__button__highlight"></div>
         </div>`;
 
         var mouseDownHandler = event => {
             if (event.target.classList[0] === "play__button" || event.target.classList[0]
                     === "play__button__highlight") {
-                !this.isActive() ? this.start() : this.pause();
+                !this.isActive() ? start() : pause();
             }
         }
         var keydownHandler = input => {
             if (!isNaN(parseInt(input.key))) {
-                this.addTime(input.key);
+                addTime(input.key);
             }
             else if (input.code === "Backspace") {
-                this.clear();
+                clear();
             }
             else if (input.code === "Space") {
-                this.pause();
+                pause();
             }
             else if (input.key === "Enter") {
-                this.start();
+                start();
             }
         }
         document.addEventListener("mousedown", mouseDownHandler);

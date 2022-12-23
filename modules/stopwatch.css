@@ -1,0 +1,52 @@
+.stopwatch {
+    color: white;
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.time {
+    display: flex;
+    justify-content: center;
+    color: white;
+    height: 60px;
+    display: flex;
+}
+
+.stopwatch__buttons__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(5px);
+}
+
+.toggle__stopwatch {
+    height: 50px;
+    width: 80px;
+    border: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    background-color: rgb(15, 79, 188);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.clear__stopwatch {
+    height: 0px;
+    width: 0px;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+.clear__stopwatch.active {
+    transform: translateX(20px);
+    height: 20px;
+    width: 20px;
+    transition: all 0.5s ease-in-out;
+    border: .5px;
+    border-style: solid;
+    border-radius: 20px;
+    font-size: 1.5rem;
+}
