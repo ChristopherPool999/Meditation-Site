@@ -52,17 +52,17 @@ const simpleTimer = function() {
             isActive = true;
             if (clockLoop === null) {
                 clockLoop = setInterval(() => {
+                    if (!isActive) {
+                        clearInterval(clockLoop);
+                        clockLoop = null;
+                        return;
+                    }
                     seconds--;
                     clockNumbers = timeInClockFormat();
                     updateInterface();
                     if (seconds === 0) {
                         this.onTimerEnd();
                         reset();
-                    }
-                    if (!isActive) {
-                        clearInterval(clockLoop);
-                        clockLoop = null;
-                        return;
                     }
                 }, 1000);
             }
@@ -139,7 +139,7 @@ const simpleTimer = function() {
             <div class="play__button__highlight"></div>
         </div>`;
 
-        var mouseDownHandler = event => {
+        var onClickHandler = event => {
             if (event.target.classList[0] === "play__button" || event.target.classList[0]
                     === "play__button__highlight") {
                 !this.isActive() ? start() : pause();
@@ -159,13 +159,13 @@ const simpleTimer = function() {
                 start();
             }
         }
-        document.addEventListener("mousedown", mouseDownHandler);
+        document.addEventListener("click", onClickHandler);
         document.addEventListener("keydown", keydownHandler);
-        handlers.push(mouseDownHandler);
+        handlers.push(onClickHandler);
         handlers.push(keydownHandler);
     }
     this.removeHandlers = () => {
-        document.removeEventListener("mousedown", handlers[0]);
+        document.removeEventListener("click", handlers[0]);
         document.removeEventListener("keydown", handlers[1]);
         handlers = [];
     }

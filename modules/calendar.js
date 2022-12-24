@@ -86,7 +86,7 @@ const simpleCalendar = function() {
         const monthName = calendarCopy.querySelector(".calendar__month");
         updateHeader(monthName);
         updateDates(calendarGrid);
-        document.body.replaceChild(calendarCopy, document.querySelector(".simple__calendar__container"));
+        document.body.replaceChild(calendarCopy, calendarNode);
 
         const calendarHeader = document.querySelector(".calendar__header");
         calendarHeader.addEventListener("click", event => {

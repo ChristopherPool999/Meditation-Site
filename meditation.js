@@ -50,6 +50,7 @@ document.addEventListener("click", event => {
     }
     var removeOldFunctionality = () => {
             mainClock.removeHandlers();
+            stopwatch.removeHandlers();
             const timerContainer = document.querySelector(".simple__timer__container");
             const stopwatchContainer = document.querySelector(".simple__stopwatch__container");
             const calendarContainer = document.querySelector(".simple__calendar__container");
@@ -83,6 +84,8 @@ document.addEventListener("click", event => {
     })
 }
 
+
+// need to remember why we changed the settime to be before everything else, pretty sure there was a bug but it doesnt happen now?
 // gotta add opitimation for query selector
 // gotta also change all event listeners to be on specific nodes
 
