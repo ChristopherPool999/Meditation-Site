@@ -17,21 +17,25 @@ const simpleTimer = function() {
             }
             return totalSeconds;
         }
-        var timeInClockFormat = () => {
-            let secondsCopy = seconds;
-            let newTimer = [0, 0, 0, 0, 0, 0];
-            for (let i = 0; i < newTimer.length; i++) {
-                if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+        var updateClockNumbers = isFirstInterval => {
+            if (clockNumbers[5] === 0 || isFirstInterval) {
+                let secondsCopy = seconds;
+                let newTimer = [0, 0, 0, 0, 0, 0];
+                for (let i = 0; i < newTimer.length; i++) {
+                    if (secondsCopy >= timerUnitsAsSeconds[i]) {
+                        newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
+                        secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+                    }
                 }
+                clockNumbers = newTimer;
+            } else {
+                clockNumbers[5]--;
             }
-            return newTimer;
         }   
     }
     var clockTime = () => {
         return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
-        + ":" + clockNumbers[4] +  clockNumbers[5];
+                + ":" + clockNumbers[4] +  clockNumbers[5];
     }
     var updateInterface = () => {
         if (document.querySelector(".simple__timer__container").firstChild) {
@@ -49,7 +53,7 @@ const simpleTimer = function() {
     { 
         let clockLoop = null;
         var countDown = () => {
-            isActive = true;
+            let firstInterval = !hasStarted;
             if (clockLoop === null) {
                 clockLoop = setInterval(() => {
                     if (!isActive) {
@@ -58,7 +62,7 @@ const simpleTimer = function() {
                         return;
                     }
                     seconds--;
-                    clockNumbers = timeInClockFormat();
+                    updateClockNumbers(firstInterval);
                     updateInterface();
                     if (seconds === 0) {
                         this.onTimerEnd();
@@ -86,11 +90,11 @@ const simpleTimer = function() {
     var start = () => {
         if (!isActive && isEmpty) {
             flashIfEmptyTimer()
-        }
-        if (!isEmpty && !isActive) {
-            hasStarted = true;
-            isActive = true;
+        } 
+        else if (!isEmpty && !isActive) {
             countDown();
+            isActive = true;
+            hasStarted = true;
             document.querySelector(".play__button").classList.toggle("active"); 
         }
     }
@@ -148,13 +152,13 @@ const simpleTimer = function() {
         var keydownHandler = input => {
             if (!isNaN(parseInt(input.key))) {
                 addTime(input.key);
-            }
+            } 
             else if (input.code === "Backspace") {
                 clear();
-            }
+            } 
             else if (input.code === "Space") {
                 pause();
-            }
+            } 
             else if (input.key === "Enter") {
                 start();
             }

@@ -47,7 +47,8 @@ const simpleCalendar = function() {
                 if (calendarDays[i] === todaysDate[0] && selectedMonth === todaysDate[1] 
                             && selectedYear === todaysDate[2] ) { 
                     grid[i].classList.toggle("today");
-                } else if (grid[i].classList[1] === "today") {
+                } 
+                else if (grid[i].classList[1] === "today") {
                     grid[i].classList.toggle("today");
                 }
             }
@@ -63,7 +64,8 @@ const simpleCalendar = function() {
         if (selectedMonth <= 0) {
             selectedMonth = 11;
             selectedYear--;
-        } else if (selectedMonth > 0) {
+        } 
+        else if (selectedMonth > 0) {
             selectedMonth--;
         }
         updateCalendar();
@@ -72,7 +74,8 @@ const simpleCalendar = function() {
         if (selectedMonth >= 11) {
             selectedMonth = 0;
             selectedYear++;
-        } else if (selectedMonth < 11) {
+        } 
+        else if (selectedMonth < 11) {
             selectedMonth++;
         }
         updateCalendar();

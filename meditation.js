@@ -25,8 +25,7 @@ document.addEventListener("click", event => {
                 event.target.classList[0] === "navbar__toggle__highlight") {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
-    }
-    else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs") {
+    } else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs") {
         navbarMenu.toggle("active");
         mobileDropdown.toggle("active");
     }
@@ -56,22 +55,18 @@ document.addEventListener("click", event => {
             const calendarContainer = document.querySelector(".simple__calendar__container");
             if (timerContainer && timerContainer.firstChild) {
                 timerContainer.replaceChildren();
-            }
-            else if (stopwatchContainer && stopwatchContainer.firstChild) {
+            } else if (stopwatchContainer && stopwatchContainer.firstChild) {
                 stopwatchContainer.replaceChildren();
-            }
-            else if (calendarContainer && calendarContainer.firstChild) {
+            } else if (calendarContainer && calendarContainer.firstChild) {
                 calendarContainer.replaceChildren();
             }
     }
     var getNewFunctionality = event => {
         if (event.target.id === "clock__selector") {
             mainClock.createClock();
-        }
-        else if (event.target.id === "stopwatch__selector") {
+        } else if (event.target.id === "stopwatch__selector") {
             stopwatch.createStopwatch();
-        }
-        else {
+        } else {
             calendar.createCalendar();
         }
     }

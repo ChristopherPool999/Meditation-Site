@@ -8,16 +8,20 @@ const simpleStopwatch = function() {
     let onEnterKeyHandler = null;
     {   
         const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
-        var timeInClockFormat = () => {
-            let secondsCopy = seconds;
-            let newTimer = [0, 0, 0, 0, 0, 0];
-            for (let i = 0; i < 6; i++) {
-                if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+        var updateClockNumbers = () => {
+            if (clockNumbers[5] === 9) {
+                let secondsCopy = seconds;
+                let newTimer = [0, 0, 0, 0, 0, 0];
+                for (let i = 0; i < 6; i++) {
+                    if (secondsCopy >= timerUnitsAsSeconds[i]) {
+                        newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
+                        secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
+                    }
                 }
+                clockNumbers = newTimer;
+            } else {
+                clockNumbers[5]++;
             }
-            return newTimer;
         }   
     }
     var clockTime = () => {
@@ -60,7 +64,7 @@ const simpleStopwatch = function() {
                         return;
                     }
                     seconds++;
-                    clockNumbers = timeInClockFormat();
+                    updateClockNumbers();
                     updateInterface();
                 }, 1000);
             }
@@ -99,10 +103,10 @@ const simpleStopwatch = function() {
     onEnterKeyHandler = input => {
         if (input.code === "Backspace") {
             clear();
-        }
+        } 
         else if (input.code === "Space") {
             pause();
-        }
+        } 
         else if (input.key === "Enter") {
             start();
         }
