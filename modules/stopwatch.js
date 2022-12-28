@@ -26,31 +26,20 @@ const simpleStopwatch = function() {
     }
     var clockTime = () => {
         return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
-        + ":" + clockNumbers[4] +  clockNumbers[5];
+                + ":" + clockNumbers[4] +  clockNumbers[5];
     }
     var updateInterface = () => {
         if (document.querySelector(".simple__stopwatch__container").firstChild) {
             document.querySelector(".time").innerHTML = clockTime();
         }
     }
-    var resetButtons = () => {
-        const buttonsContainer = document.querySelector(".stopwatch__buttons__container");
-        const toggleStopwatchBtn = buttonsContainer.querySelector(".toggle__stopwatch");
-
-        buttonsContainer.querySelector(".clear__stopwatch").classList.toggle("active");
-        toggleStopwatchBtn.classList.toggle("has__started");
-        if (toggleStopwatchBtn.innerHTML == "Pause") {
-            toggleStopwatchBtn.classList.toggle("active");
-        }
-        toggleStopwatchBtn.innerHTML = "Start";
-    }  
     var reset = () => { 
         clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
         hasStarted = false;
         updateInterface();
-        resetButtons();
+        toggleClassOnReset();
     }
     { 
         let clockLoop = null;
@@ -71,20 +60,14 @@ const simpleStopwatch = function() {
         }
     }
     var pause = () => {
-        if (hasStarted) {
-            isActive ? isActive = false : countDown();
-        }
+        toggleClassOnStart(); 
+        isActive ? isActive = false : countDown();
     }
     var start = () => {
-        if (!hasStarted) {
-            document.querySelector(".clear__stopwatch").classList.toggle("active");
-            document.querySelector(".toggle__stopwatch").classList.toggle("has__started");
-        }
-        if (!isActive) {
-            hasStarted = true;
-            isActive = true;
-            countDown();
-        }
+        toggleClassOnStart(); 
+        hasStarted = true;
+        isActive = true;
+        countDown();
     }
     { 
         let clearAttempts = 0;
@@ -104,27 +87,40 @@ const simpleStopwatch = function() {
         if (input.code === "Backspace") {
             clear();
         } 
-        else if (input.code === "Space") {
+        else if (input.code === "Space" && hasStarted) {
             pause();
         } 
-        else if (input.key === "Enter") {
+        else if (input.key === "Enter" && !isActive) {
             start();
         }
     }
-    var addHandlers = () => {
+    var toggleClassOnStart = () => {
+        if (!hasStarted) {
+            document.querySelector(".clear__stopwatch").classList.toggle("active");
+            document.querySelector(".toggle__stopwatch").classList.toggle("has__started");
+        }
         const stopwatchToggle = document.querySelector(".toggle__stopwatch");
-        const clearButton = document.querySelector(".clear__stopwatch");
-
+        stopwatchToggle.classList.toggle("active");
+        let toggleBtnText = isActive ? "Start" : "Pause";
+        stopwatchToggle.innerHTML = toggleBtnText;
+    }
+    var toggleClassOnReset = () => {
+        const toggleStartBtn = document.querySelector(".toggle__stopwatch");
+        toggleStartBtn.classList = "toggle__stopwatch";
+        toggleStartBtn.innerHTML = "Start";
+        document.querySelector(".clear__stopwatch").classList = "clear__stopwatch";
+    }
+    var addHandlers = () => {
         document.addEventListener("keydown", onEnterKeyHandler);
 
-        stopwatchToggle.addEventListener("click", () => {
-            isActive ? pause() : start();
-            stopwatchToggle.classList.toggle("active");
-            let toggleBtnText = isActive ? "Pause" : "Start";
-            stopwatchToggle.innerHTML = toggleBtnText;
-        })
-        clearButton.addEventListener("click", () => {
-            reset();
+        const buttonsContainer = document.querySelector(".stopwatch__buttons__container");
+        buttonsContainer.addEventListener("click", event => {
+            if (event.target.classList[0] === "toggle__stopwatch") {               
+                isActive ? pause() : start();
+            }
+            if (event.target.classList[0] === "clear__stopwatch") {                
+                reset();
+            }
         })
     }   
     this.createStopwatch = () => {
@@ -136,7 +132,7 @@ const simpleStopwatch = function() {
             toggleStopwatchClass = "toggle__stopwatch has__started";
             clearStopwatchClass = "clear__stopwatch active";
         }
-        if (isActive) {
+        else if (isActive) {
             toggleStopwatchClass = "toggle__stopwatch has__started active";
             clearStopwatchClass = "clear__stopwatch active";
             toggleStopwatchText = "Pause";

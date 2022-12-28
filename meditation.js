@@ -79,6 +79,7 @@ document.addEventListener("click", event => {
     })
 }
 
+// figure out accessability and why they keep fucking up my buttons
 
 // need to remember why we changed the settime to be before everything else, pretty sure there was a bug but it doesnt happen now?
 // gotta add opitimation for query selector
