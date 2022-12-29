@@ -220,3 +220,47 @@ html {
 .simple__stopwatch__container {
     transform: translateY(100px);
 }
+
+.scrollbar__test__container {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    left: 50vw;
+    transform: translateX(-50%);
+}
+
+.opaque__cover {
+    width: 80px;
+    height: 60px;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.574);
+    z-index: -1;
+    transform: translateY(5px);
+}
+
+.scrollbar__test {
+    width: 80px;
+    height: 80px;
+    z-index: -1;
+    background-color: rgba(255, 255, 255, 0.2);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 1;
+}
+
+.scrollbar__test span {
+    text-align: center;
+    width: 80px;
+    height: 50px;
+    font-size: 4rem;
+    color: white;
+    margin: 5px 0px 5px 0px;
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}

@@ -173,5 +173,59 @@ const simpleTimer = function() {
         document.removeEventListener("keydown", handlers[1]);
         handlers = [];
     }
+    let numbersInScroll = [98, 99, 0, 1, 2];
+    var generateNewClockNumbers = generateDown => {
+        if (generateDown) {
+            numbersInScroll = numbersInScroll.map( (num) => (num === 0) ? 99 : num - 1);
+
+        } else {
+            numbersInScroll = numbersInScroll.map( (num) => (num === 99) ? 0 : num + 1);
+        }
+    }
+    const timerCustomScroll = document.querySelector(".scrollbar__test");
+    var updateClockNumbersHTML = generateDown => {
+        generateNewClockNumbers(generateDown);
+        timerCustomScroll.innerHTML = `
+            <span>${numbersInScroll[0]}</span>
+            <span>${numbersInScroll[1]}</span>
+            <span>${numbersInScroll[2]}</span>
+            <span>${numbersInScroll[3]}</span>
+            <span>${numbersInScroll[4]}</span>
+        `
+    }
+    var createInfiniteScroll = () => {
+        if (timerCustomScroll.scrollTop >= 188) {
+            timerCustomScroll.scrollTop = 120;
+            updateClockNumbersHTML();
+        }
+        if (timerCustomScroll.scrollTop <= 65) {
+            updateClockNumbersHTML(true);
+            timerCustomScroll.scrollTop = 120;
+        }
+    }
+    {
+        // using code from https://codepen.io/discoverthreejs/pen/JdJqed to solve mousedirection 12/28/22 
+        let oldY = 0;
+        var mousemovemethod = e => {
+            if (clockScrollheldDown){
+                createInfiniteScroll();
+                if (e.pageY < oldY) {
+                    timerCustomScroll.scrollTop -= 3;
+                } else if (e.pageY > oldY) {
+                    timerCustomScroll.scrollTop += 3;
+                }
+                oldY = e.pageY; 
+            } 
+        }
+    }
+    document.addEventListener('mousemove', mousemovemethod);
+    let clockScrollheldDown = false;
+    timerCustomScroll.parentNode.addEventListener("mousedown", () => {
+        clockScrollheldDown = true;
+    })
+    document.addEventListener("mouseup", () => {
+        clockScrollheldDown = false;
+    })
+    timerCustomScroll.scrollTop = 125; 
 }
 export { simpleTimer };
