@@ -3,7 +3,7 @@
     font-size: 2.5rem;
     display: flex;
     justify-content: center;
-    padding-left: 26px;
+    margin: auto;
 }
 
 .timer.active span {
@@ -22,12 +22,13 @@
 }
 
 .play__button {
+    position: absolute;
     width: 26px;
     height: 26px;
     border-style: solid;
     border-color: #fff;
     background-color: transparent;
-    transform: translate(20px, 10px);
+    transform: translate(110px, 10px);
     transition: all 0.2s ease-in-out;
     z-index: 2;
     cursor: pointer;
@@ -47,7 +48,7 @@
     width: 45px;
     height: 45px;
     position: absolute;
-    transform: translate(98px, 0px);
+    transform: translate(110px, 0px);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -58,4 +59,28 @@
 
 .play__button:hover + .play__button__highlight {
     background-color: rgb(77, 77, 77, .7);
+}
+
+.timer__buttons__container {
+    display: grid;
+    width: 300px;
+    height: 120px;
+    position: relative;
+    margin: auto;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+
+.clock__button {
+    width: 40px;
+    height: 30px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: auto;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.clock__button:hover {
+    background-color: rgb(158, 158, 158);
 }

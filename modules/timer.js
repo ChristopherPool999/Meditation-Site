@@ -43,6 +43,9 @@ const simpleTimer = function() {
         }
     }
     var reset = () => { 
+        if (isActive) {
+            document.querySelector(".play__button").classList.toggle("active"); 
+        }
         clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
@@ -89,7 +92,7 @@ const simpleTimer = function() {
     }
     var start = () => {
         if (!isActive && isEmpty) {
-            flashIfEmptyTimer()
+            flashIfEmptyTimer();
         } 
         else if (!isEmpty && !isActive) {
             countDown();
@@ -110,16 +113,13 @@ const simpleTimer = function() {
     }
     { 
         let clearAttempts = 0;
-        var clear = () => {
+        var clearUsingKeys = () => {
             if (!isEmpty) {
                 clearAttempts++;
                 setTimeout(function() {
                     clearAttempts = 0;
                 }, 500);
                 if (clearAttempts === 2) {
-                    if (isActive) {
-                        document.querySelector(".play__button").classList.toggle("active"); 
-                    }
                     reset(); 
                 }
             }
@@ -140,7 +140,20 @@ const simpleTimer = function() {
         <div class="timer">
             <span class="time">${clockTime()}</span>
             <button class="${playBtnActive}"></button>
-            <div class="play__button__highlight"></div>
+            <div class="play__button__highlight"></div>  
+        </div>
+        <div class="timer__buttons__container">
+            <button class="clock__button">0</button>
+            <button class="clock__button">1</button>
+            <button class="clock__button">2</button>
+            <button class="clock__button">3</button>
+            <button class="clock__button">4</button>
+            <button class="clock__button">5</button>
+            <button class="clock__button">6</button>
+            <button class="clock__button">7</button>
+            <button class="clock__button">8</button>
+            <button class="clock__button">9</button>
+            <button class="clock__button">Del</button>
         </div>`;
 
         var onClickHandler = event => {
@@ -148,13 +161,20 @@ const simpleTimer = function() {
                     === "play__button__highlight") {
                 !this.isActive() ? start() : pause();
             }
+            if (event.target.classList[0] === "clock__button") {
+                if (!isNaN(parseInt(event.target.innerHTML))) {
+                    addTime(parseInt(event.target.innerHTML));
+                } else {
+                    reset();
+                }
+            }
         }
         var keydownHandler = input => {
             if (!isNaN(parseInt(input.key))) {
                 addTime(input.key);
             } 
             else if (input.code === "Backspace") {
-                clear();
+                clearUsingKeys();
             } 
             else if (input.code === "Space") {
                 pause();
@@ -173,59 +193,5 @@ const simpleTimer = function() {
         document.removeEventListener("keydown", handlers[1]);
         handlers = [];
     }
-    let numbersInScroll = [98, 99, 0, 1, 2];
-    var generateNewClockNumbers = generateDown => {
-        if (generateDown) {
-            numbersInScroll = numbersInScroll.map( (num) => (num === 0) ? 99 : num - 1);
-
-        } else {
-            numbersInScroll = numbersInScroll.map( (num) => (num === 99) ? 0 : num + 1);
-        }
-    }
-    const timerCustomScroll = document.querySelector(".scrollbar__test");
-    var updateClockNumbersHTML = generateDown => {
-        generateNewClockNumbers(generateDown);
-        timerCustomScroll.innerHTML = `
-            <span>${numbersInScroll[0]}</span>
-            <span>${numbersInScroll[1]}</span>
-            <span>${numbersInScroll[2]}</span>
-            <span>${numbersInScroll[3]}</span>
-            <span>${numbersInScroll[4]}</span>
-        `
-    }
-    var createInfiniteScroll = () => {
-        if (timerCustomScroll.scrollTop >= 188) {
-            timerCustomScroll.scrollTop = 120;
-            updateClockNumbersHTML();
-        }
-        if (timerCustomScroll.scrollTop <= 65) {
-            updateClockNumbersHTML(true);
-            timerCustomScroll.scrollTop = 120;
-        }
-    }
-    {
-        // using code from https://codepen.io/discoverthreejs/pen/JdJqed to solve mousedirection 12/28/22 
-        let oldY = 0;
-        var mousemovemethod = e => {
-            if (clockScrollheldDown){
-                createInfiniteScroll();
-                if (e.pageY < oldY) {
-                    timerCustomScroll.scrollTop -= 3;
-                } else if (e.pageY > oldY) {
-                    timerCustomScroll.scrollTop += 3;
-                }
-                oldY = e.pageY; 
-            } 
-        }
-    }
-    document.addEventListener('mousemove', mousemovemethod);
-    let clockScrollheldDown = false;
-    timerCustomScroll.parentNode.addEventListener("mousedown", () => {
-        clockScrollheldDown = true;
-    })
-    document.addEventListener("mouseup", () => {
-        clockScrollheldDown = false;
-    })
-    timerCustomScroll.scrollTop = 125; 
 }
 export { simpleTimer };

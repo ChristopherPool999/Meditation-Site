@@ -149,9 +149,8 @@ html {
     height: 30px;
     width: 90px;
     z-index: 4;
-    left: 50vw;
-    transform: translate(-57%, 50px);
-    margin: 5px;
+    left: 50%;
+    transform: translate(-50%, 50px);
     background: linear-gradient(270deg, rgba(37,37,37,1) 0%, rgba(25,25,25,1) 50%, rgba(15,15,15,1) 100%);
 
 }
@@ -221,46 +220,21 @@ html {
     transform: translateY(100px);
 }
 
-.scrollbar__test__container {
-    width: 80px;
-    height: 80px;
-    position: absolute;
-    left: 50vw;
-    transform: translateX(-50%);
+.base-timer {
+    position: relative;
+    height: 300px;
+    width: 300px;
+    transform: translateY(-200px);
+  }
+  
+/* Removes SVG styling that would hide the time label */
+.base-timer__circle {
+    fill: none;
+    stroke: none;
 }
 
-.opaque__cover {
-    width: 80px;
-    height: 60px;
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.574);
-    z-index: -1;
-    transform: translateY(5px);
-}
-
-.scrollbar__test {
-    width: 80px;
-    height: 80px;
-    z-index: -1;
-    background-color: rgba(255, 255, 255, 0.2);
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    z-index: 1;
-}
-
-.scrollbar__test span {
-    text-align: center;
-    width: 80px;
-    height: 50px;
-    font-size: 4rem;
-    color: white;
-    margin: 5px 0px 5px 0px;
-    -webkit-user-select: none; /* Safari */        
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
+/* The SVG path that displays the timer's progress */
+.base-timer__path-elapsed {
+    stroke-width: 7px;
+    stroke: rgba(128, 128, 128, 0.535);
 }
