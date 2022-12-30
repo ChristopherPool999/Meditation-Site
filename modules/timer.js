@@ -6,7 +6,7 @@ const simpleTimer = function() {
     let seconds = 0;
     let hasStarted = false;
     let isEmpty = true;
-    let handlers = [];
+    let onKeyHandler = null;
 
     {   
         const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
@@ -38,14 +38,11 @@ const simpleTimer = function() {
                 + ":" + clockNumbers[4] +  clockNumbers[5];
     }
     var updateInterface = () => {
-        if (document.querySelector(".simple__timer__container").firstChild) {
+        if (document.querySelector(".simple__timer").firstChild) {
             document.querySelector(".time").innerHTML = clockTime();
         }
     }
     var reset = () => { 
-        if (isActive) {
-            document.querySelector(".play__button").classList.toggle("active"); 
-        }
         clockNumbers = [0, 0, 0, 0, 0, 0];
         isActive = false;
         seconds = 0;
@@ -75,30 +72,17 @@ const simpleTimer = function() {
             }
         }
     }
-    var flashIfEmptyTimer = () => {
-        let interfaceContainer = document.querySelector(".timer").classList; 
-        if (interfaceContainer[1] !== "active") {
-            interfaceContainer.toggle("active");
-            setTimeout(() => {
-                interfaceContainer.toggle("active");
-            }, 500);
-        }
-    }
     var pause = () => {
         if (hasStarted) {
             isActive ? isActive = false : countDown();
-            document.querySelector(".play__button").classList.toggle("active");
         }
     }
     var start = () => {
-        if (!isActive && isEmpty) {
-            flashIfEmptyTimer();
-        } 
-        else if (!isEmpty && !isActive) {
+        if (!isEmpty && !isActive) {
+            createActiveClock();
             countDown();
             isActive = true;
             hasStarted = true;
-            document.querySelector(".play__button").classList.toggle("active"); 
         }
     }
     var addTime = input => {
@@ -112,14 +96,14 @@ const simpleTimer = function() {
             }
     }
     { 
-        let clearAttempts = 0;
-        var clearUsingKeys = () => {
+        let resetAttempts = 0;
+        var awaitResetConfirm = () => {
             if (!isEmpty) {
-                clearAttempts++;
+                resetAttempts++;
                 setTimeout(function() {
-                    clearAttempts = 0;
+                    resetAttempts = 0;
                 }, 500);
-                if (clearAttempts === 2) {
+                if (resetAttempts === 2) {
                     reset(); 
                 }
             }
@@ -134,47 +118,34 @@ const simpleTimer = function() {
     this.getTimeLeft = () => {
         return seconds;
     }
-    this.createClock = () => {
-        const playBtnActive = isActive ? "play__button active" : "play__button";
-        document.querySelector(".simple__timer__container").innerHTML = `
-        <div class="timer">
-            <span class="time">${clockTime()}</span>
-            <button class="${playBtnActive}"></button>
-            <div class="play__button__highlight"></div>  
-        </div>
-        <div class="timer__buttons__container">
-            <button class="clock__button">0</button>
-            <button class="clock__button">1</button>
-            <button class="clock__button">2</button>
-            <button class="clock__button">3</button>
-            <button class="clock__button">4</button>
-            <button class="clock__button">5</button>
-            <button class="clock__button">6</button>
-            <button class="clock__button">7</button>
-            <button class="clock__button">8</button>
-            <button class="clock__button">9</button>
-            <button class="clock__button">Del</button>
-        </div>`;
-
-        var onClickHandler = event => {
-            if (event.target.classList[0] === "play__button" || event.target.classList[0]
-                    === "play__button__highlight") {
-                !this.isActive() ? start() : pause();
-            }
-            if (event.target.classList[0] === "clock__button") {
-                if (!isNaN(parseInt(event.target.innerHTML))) {
-                    addTime(parseInt(event.target.innerHTML));
-                } else {
-                    reset();
-                }
-            }
-        }
-        var keydownHandler = input => {
+    /////////////////////////// ugly af past here
+    this.createInactiveClock = () => {
+        document.querySelector(".simple__timer").innerHTML = `
+            <div class="timer__container">
+                <div class="timer">
+                    <span class="time">${clockTime()}</span> 
+                </div>
+                <div class="timer__buttons__container">
+                    <button class="clock__button">1</button>
+                    <button class="clock__button">2</button>
+                    <button class="clock__button">3</button>
+                    <button class="clock__button start__button">Go</button>
+                    <button class="clock__button">4</button>
+                    <button class="clock__button">5</button>
+                    <button class="clock__button">6</button>
+                    <button class="clock__button clear__button">Del</button>
+                    <button class="clock__button">7</button>
+                    <button class="clock__button">8</button>
+                    <button class="clock__button">9</button>
+                    <button class="clock__button">0</button>
+                </div>
+            </div>`;
+        var onKeyHandler = input => {
             if (!isNaN(parseInt(input.key))) {
                 addTime(input.key);
             } 
             else if (input.code === "Backspace") {
-                clearUsingKeys();
+                awaitResetConfirm();
             } 
             else if (input.code === "Space") {
                 pause();
@@ -183,15 +154,35 @@ const simpleTimer = function() {
                 start();
             }
         }
-        document.addEventListener("click", onClickHandler);
-        document.addEventListener("keydown", keydownHandler);
-        handlers.push(onClickHandler);
-        handlers.push(keydownHandler);
+        document.addEventListener("keydown", onKeyHandler);
+        document.querySelector(".timer__container").addEventListener("click", event => {
+            if (event.target.classList[0] === "clock__button") {
+                let buttonValue = parseInt(event.target.innerHTML);
+                if (!isNaN(buttonValue)) {
+                    addTime(buttonValue);
+                } else {
+                    reset();
+                }
+            }
+        })
+    }
+    var createActiveClock = () => {
+        document.querySelector(".simple__timer").innerHTML = `
+        <div class="timer">
+            <div class="base-timer">
+                <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g class="base-timer__circle">
+                    <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+                    </g>
+                </svg>
+                <span id="base-timer-label" class="base-timer__label">
+                    ${clockTime()} 
+                </span>
+            </div>
+        </div>`
     }
     this.removeHandlers = () => {
-        document.removeEventListener("click", handlers[0]);
-        document.removeEventListener("keydown", handlers[1]);
-        handlers = [];
+        document.removeEventListener("keydown", onKeyHandler);
     }
 }
 export { simpleTimer };

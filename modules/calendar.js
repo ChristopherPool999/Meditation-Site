@@ -81,7 +81,7 @@ const simpleCalendar = function() {
         updateCalendar();
     }
     var updateCalendar = () => {
-        const calendarNode = document.querySelector(".simple__calendar__container");
+        const calendarNode = document.querySelector(".simple__calendar");
         const calendarCopy = document.createDocumentFragment();
         calendarCopy.appendChild(calendarNode.cloneNode(true));
 

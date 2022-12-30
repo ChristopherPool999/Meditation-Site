@@ -29,7 +29,7 @@ const simpleStopwatch = function() {
                 + ":" + clockNumbers[4] +  clockNumbers[5];
     }
     var updateInterface = () => {
-        if (document.querySelector(".simple__stopwatch__container").firstChild) {
+        if (document.querySelector(".simple__stopwatch").firstChild) {
             document.querySelector(".time").innerHTML = clockTime();
         }
     }
@@ -137,7 +137,7 @@ const simpleStopwatch = function() {
             clearStopwatchClass = "clear__stopwatch active";
             toggleStopwatchText = "Pause";
         }
-        document.querySelector(".simple__stopwatch__container").innerHTML = `
+        document.querySelector(".simple__stopwatch").innerHTML = `
             <div class="stopwatch">
                 <span class="time">${clockTime()}</span>
             </div>

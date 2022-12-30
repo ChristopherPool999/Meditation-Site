@@ -6,12 +6,12 @@ import { simpleStopwatch } from "./modules/stopwatch.js";
 const calendar = new simpleCalendar();
 const stopwatch = new simpleStopwatch();
 const mainClock = new simpleTimer();
-mainClock.createClock();
+mainClock.createInactiveClock();
 
 var playMusic = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
     audio.play();
-    if (document.querySelector(".simple__timer__container").firstChild) {
+    if (document.querySelector(".simple__timer").firstChild) {
         document.querySelector(".play__button").classList.toggle("active");
     }
 }
@@ -50,9 +50,9 @@ document.addEventListener("click", event => {
     var removeOldFunctionality = () => {
             mainClock.removeHandlers();
             stopwatch.removeHandlers();
-            const timerContainer = document.querySelector(".simple__timer__container");
-            const stopwatchContainer = document.querySelector(".simple__stopwatch__container");
-            const calendarContainer = document.querySelector(".simple__calendar__container");
+            const timerContainer = document.querySelector(".simple__timer");
+            const stopwatchContainer = document.querySelector(".simple__stopwatch");
+            const calendarContainer = document.querySelector(".simple__calendar");
             if (timerContainer && timerContainer.firstChild) {
                 timerContainer.replaceChildren();
             } else if (stopwatchContainer && stopwatchContainer.firstChild) {
@@ -63,7 +63,7 @@ document.addEventListener("click", event => {
     }
     var getNewFunctionality = event => {
         if (event.target.id === "clock__selector") {
-            mainClock.createClock();
+            mainClock.createInactiveClock();
         } else if (event.target.id === "stopwatch__selector") {
             stopwatch.createStopwatch();
         } else {

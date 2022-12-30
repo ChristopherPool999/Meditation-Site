@@ -208,33 +208,14 @@ html {
     font-weight: bold;
 }
 
-.simple__calendar__container {
+.simple__calendar {
     transform: translateY(100px);
 }
 
-.simple__timer__container {
+.simple__timer {
     transform: translateY(100px);
 }
 
-.simple__stopwatch__container {
+.simple__stopwatch {
     transform: translateY(100px);
-}
-
-.base-timer {
-    position: relative;
-    height: 300px;
-    width: 300px;
-    transform: translateY(-200px);
-  }
-  
-/* Removes SVG styling that would hide the time label */
-.base-timer__circle {
-    fill: none;
-    stroke: none;
-}
-
-/* The SVG path that displays the timer's progress */
-.base-timer__path-elapsed {
-    stroke-width: 7px;
-    stroke: rgba(128, 128, 128, 0.535);
 }
