@@ -15,30 +15,49 @@
 
 .timer__buttons__container {
     display: grid;
-    width: 300px;
-    height: 120px;
+    width: 260px;
+    height: 160px;
     position: relative;
     margin: auto;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
-}
-
-.clock__button {
-    width: 40px;
-    height: 30px;
+    background-color: rgb(8, 8, 8);
     border-style: solid;
     border-radius: 5px;
-    margin: auto;
-    font-weight: bold;
-    cursor: pointer;
 }
 
-.clock__button:hover {
-    background-color: rgb(158, 158, 158);
+.timer__buttons__container * {
+    width: 50px;
+    height: 40px;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: rgb(0, 0, 0, 0);
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    margin: auto;
+    color: rgb(255, 255, 255);
+}
+
+.number__button {
+    background-color: rgb(30, 30, 30);
+}
+
+.number__button:hover {
+    background-color: rgb(51, 51, 51);
 }
 
 .start__button {
-    background-color: rgb(14, 185, 128);
+    background-color: rgb(107, 107, 107);
+    cursor: not-allowed;
+    transition: .4s;
+}
+
+.start__button.active {
+    background-color: rgb(69, 199, 104);
+    cursor: pointer;
+    color: white;
+    transition: .4s;
 }
 
 .clear__button {
@@ -51,13 +70,11 @@
     width: 300px;
 }
   
-/* Removes SVG styling that would hide the time label */
 .base-timer__circle {
     fill: none;
     stroke: none;
 }
 
-/* The SVG path that displays the timer's progress */
 .base-timer__path-elapsed {
     stroke-width: 7px;
     stroke: rgba(128, 128, 128, 0.535);
@@ -70,4 +87,17 @@
     color: white;
     font-size: 3.3rem;
     justify-content: center;    
+}
+
+.base-timer__path-remaining {
+    stroke-width: 7px;
+    stroke-linecap: round;
+    transform: rotate(90deg);
+    transform-origin: center;
+    transition: 1s linear all;
+    stroke: rgb(76, 76, 249);
+}
+  
+.base-timer__svg {
+    transform: scaleX(-1);
 }

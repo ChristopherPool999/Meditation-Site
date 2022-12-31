@@ -6,7 +6,6 @@ const simpleTimer = function() {
     let isActive = false;
     let hasStarted = false;
     let isEmpty = true;
-    let onKeyPressHandler = null;
     const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
 
     var updateTimerValues = reformatTimerValues => {
@@ -29,11 +28,18 @@ const simpleTimer = function() {
                 + ":" + timerValues[4] +  timerValues[5];
     }
     var updateInterface = () => {
-        if (document.querySelector(".simple__timer").firstChild) {
-            document.querySelector(".time").innerHTML = getTimerFormatted();
+        if (!isActive){
+            if (document.querySelector(".simple__timer").firstChild) {
+                document.querySelector(".time").innerHTML = getTimerFormatted();
+            }
+        } else {
+            if (document.querySelector(".simple__timer").firstChild) {
+                document.querySelector(".base-timer__label").innerHTML = getTimerFormatted();
+            }
         }
     }
     var reset = () => { 
+        document.querySelector(".start__button").classList.toggle("active");
         timerValues = [0, 0, 0, 0, 0, 0];
         isActive = false;
         secondsLeft = 0;
@@ -62,13 +68,24 @@ const simpleTimer = function() {
             }
         }
     }
-    var activeTimerInterface = () => {
+    var timerStartedHtml = () => {
         return `
             <div class="timer">
                 <div class="base-timer">
                     <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                         <g class="base-timer__circle">
                             <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+                            <path
+                                id="base-timer-path-remaining"
+                                stroke-dasharray="283"
+                                class="base-timer__path-remaining"
+                                d="
+                                  M 50, 50
+                                  m -45, 0
+                                  a 45,45 0 1,0 90,0
+                                  a 45,45 0 1,0 -90,0
+                                "
+                          ></path>
                         </g>
                     </svg>
                     <span id="base-timer-label" class="base-timer__label">
@@ -87,6 +104,9 @@ const simpleTimer = function() {
     var addTime = input => {
         if (!hasStarted && timerValues[0] === 0) 
             if (input !== "0" || !isEmpty) {
+                if (isEmpty){
+                    document.querySelector(".start__button").classList.toggle("active");
+                }
                 isEmpty = false;
                 timerValues.shift();
                 timerValues.push(input);
@@ -116,13 +136,13 @@ const simpleTimer = function() {
     var startTimer = () => {
         if (!isEmpty && !isActive) {
             updateTimerValues(true);
-            document.querySelector(".simple__timer").innerHTML = activeTimerInterface();
+            document.querySelector(".simple__timer").innerHTML = timerStartedHtml();
             countDown();
             isActive = true;
             hasStarted = true;
         }
     }
-    onKeyPressHandler = input => {
+    var onKeyPressHandler = input => {
         if (!isNaN(parseInt(input.key))) {
             addTime(input.key);
         } 
@@ -139,39 +159,43 @@ const simpleTimer = function() {
     var attachEventListeners = () => {
         document.addEventListener("keydown", onKeyPressHandler);
         document.querySelector(".timer__container").addEventListener("click", event => {
-            if (event.target.classList[0] === "clock__button") {
-                let buttonValue = parseInt(event.target.innerHTML);
-                if (!isNaN(buttonValue)) {
-                    addTime(buttonValue);
-                } else if (event.target.classList[1] === "clear__button") {
-                    reset();
-                } else {
-                    startTimer();
-                }
+            let target = event.target.classList[0];
+            if (target === "number__button") {
+                if (!isNaN(parseInt(event.target.innerHTML))) {
+                    addTime(event.target.innerHTML);
+                } 
+            } else if (target === "clear__button") {
+                reset();
+            } else if (target === "start__button") {
+                startTimer();
             }
         })
     }
-    this.createInactiveClock = () => {
-        document.querySelector(".simple__timer").innerHTML = `
+    var inactiveTimerHtml = () => {
+        let startButtonClassName = isEmpty ? "start__button" : "start__button active";
+        return `
             <div class="timer__container">
                 <div class="timer">
                     <span class="time">${getTimerFormatted()}</span> 
                 </div>
                 <div class="timer__buttons__container">
-                    <button class="clock__button">1</button>
-                    <button class="clock__button">2</button>
-                    <button class="clock__button">3</button>
-                    <button class="clock__button start__button">Go</button>
-                    <button class="clock__button">4</button>
-                    <button class="clock__button">5</button>
-                    <button class="clock__button">6</button>
-                    <button class="clock__button clear__button">Del</button>
-                    <button class="clock__button">7</button>
-                    <button class="clock__button">8</button>
-                    <button class="clock__button">9</button>
-                    <button class="clock__button">0</button>
+                    <button class="number__button">1</button>
+                    <button class="number__button">2</button>
+                    <button class="number__button">3</button>
+                    <button class="${startButtonClassName}">Go</button>
+                    <button class="number__button">4</button>
+                    <button class="number__button">5</button>
+                    <button class="number__button">6</button>
+                    <button class="clear__button">Del</button>
+                    <button class="number__button">7</button>
+                    <button class="number__button">8</button>
+                    <button class="number__button">9</button>
+                    <button class="number__button">0</button>
                 </div>
             </div>`;
+    }
+    this.createClock =() => {
+        document.querySelector(".simple__timer").innerHTML = (isActive) ? timerStartedHtml() : inactiveTimerHtml();
         attachEventListeners();
     }
     this.removeHandlers = () => {
