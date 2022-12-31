@@ -1,51 +1,42 @@
 "use strict";
 
 const simpleTimer = function() {
-    let clockNumbers = [0, 0, 0, 0, 0, 0];
+    let timerValues = [0, 0, 0, 0, 0, 0];
+    let secondsLeft = 0;
     let isActive = false;
-    let seconds = 0;
     let hasStarted = false;
     let isEmpty = true;
-    let onKeyHandler = null;
+    let onKeyPressHandler = null;
+    const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
 
-    {   
-        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
-        var timeInSeconds = () => {
-            let totalSeconds = 0;
-            for (let i = 0; i < clockNumbers.length; i++) {
-                totalSeconds += clockNumbers[i] * timerUnitsAsSeconds[i];
-            }
-            return totalSeconds;
-        }
-        var updateClockNumbers = isFirstInterval => {
-            if (clockNumbers[5] === 0 || isFirstInterval) {
-                let secondsCopy = seconds;
-                let newTimer = [0, 0, 0, 0, 0, 0];
-                for (let i = 0; i < newTimer.length; i++) {
-                    if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                        newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                        secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
-                    }
+    var updateTimerValues = reformatTimerValues => {
+        if (timerValues[5] === 0 || reformatTimerValues) {
+            let secondsCopy = secondsLeft;
+            let newTimer = [0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < newTimer.length; i++) {
+                if (secondsCopy >= timerUnitsAsSeconds[i]) {
+                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
+                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
                 }
-                clockNumbers = newTimer;
-            } else {
-                clockNumbers[5]--;
             }
-        }   
-    }
-    var clockTime = () => {
-        return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
-                + ":" + clockNumbers[4] +  clockNumbers[5];
+            timerValues = newTimer;
+        } else {
+            timerValues[5]--;
+        }
+    }   
+    var getTimerFormatted = () => {
+        return "" + timerValues[0] +  timerValues[1] +  ":" + timerValues[2] + timerValues[3] 
+                + ":" + timerValues[4] +  timerValues[5];
     }
     var updateInterface = () => {
         if (document.querySelector(".simple__timer").firstChild) {
-            document.querySelector(".time").innerHTML = clockTime();
+            document.querySelector(".time").innerHTML = getTimerFormatted();
         }
     }
     var reset = () => { 
-        clockNumbers = [0, 0, 0, 0, 0, 0];
+        timerValues = [0, 0, 0, 0, 0, 0];
         isActive = false;
-        seconds = 0;
+        secondsLeft = 0;
         isEmpty = true;
         hasStarted = false;
         updateInterface();
@@ -53,7 +44,6 @@ const simpleTimer = function() {
     { 
         let clockLoop = null;
         var countDown = () => {
-            let firstInterval = !hasStarted;
             if (clockLoop === null) {
                 clockLoop = setInterval(() => {
                     if (!isActive) {
@@ -61,10 +51,10 @@ const simpleTimer = function() {
                         clockLoop = null;
                         return;
                     }
-                    seconds--;
-                    updateClockNumbers(firstInterval);
+                    secondsLeft--;
+                    updateTimerValues();
                     updateInterface();
-                    if (seconds === 0) {
+                    if (secondsLeft === 0) {
                         this.onTimerEnd();
                         reset();
                     }
@@ -72,32 +62,41 @@ const simpleTimer = function() {
             }
         }
     }
-    var pause = () => {
-        if (hasStarted) {
-            isActive ? isActive = false : countDown();
-        }
+    var activeTimerInterface = () => {
+        return `
+            <div class="timer">
+                <div class="base-timer">
+                    <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <g class="base-timer__circle">
+                            <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+                        </g>
+                    </svg>
+                    <span id="base-timer-label" class="base-timer__label">
+                        ${getTimerFormatted()} 
+                    </span>
+                </div>
+            </div>`
     }
-    var start = () => {
-        if (!isEmpty && !isActive) {
-            createActiveClock();
-            countDown();
-            isActive = true;
-            hasStarted = true;
+    var findTimeRemaining = () => {
+        let totalSeconds = 0;
+        for (let i = 0; i < timerValues.length; i++) {
+            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
         }
+        return totalSeconds;
     }
     var addTime = input => {
-        if (!hasStarted && clockNumbers[0] === 0) 
+        if (!hasStarted && timerValues[0] === 0) 
             if (input !== "0" || !isEmpty) {
                 isEmpty = false;
-                clockNumbers.shift();
-                clockNumbers.push(input);
-                seconds = timeInSeconds();
+                timerValues.shift();
+                timerValues.push(input);
+                secondsLeft = findTimeRemaining();
                 updateInterface();
             }
     }
     { 
         let resetAttempts = 0;
-        var awaitResetConfirm = () => {
+        var confirmResetButton = () => {
             if (!isEmpty) {
                 resetAttempts++;
                 setTimeout(function() {
@@ -109,21 +108,54 @@ const simpleTimer = function() {
             }
         }
     }   
-    this.onTimerEnd = callback => {
-        callback();
+    var pauseTimer = () => {
+        if (hasStarted) {
+            isActive ? isActive = false : countDown();
+        }
     }
-    this.isActive = () => {
-        return isActive;
+    var startTimer = () => {
+        if (!isEmpty && !isActive) {
+            updateTimerValues(true);
+            document.querySelector(".simple__timer").innerHTML = activeTimerInterface();
+            countDown();
+            isActive = true;
+            hasStarted = true;
+        }
     }
-    this.getTimeLeft = () => {
-        return seconds;
+    onKeyPressHandler = input => {
+        if (!isNaN(parseInt(input.key))) {
+            addTime(input.key);
+        } 
+        else if (input.code === "Backspace") {
+            confirmResetButton();
+        } 
+        else if (input.code === "Space") {
+            pauseTimer();
+        } 
+        else if (input.key === "Enter") {
+            startTimer();
+        }
     }
-    /////////////////////////// ugly af past here
+    var attachEventListeners = () => {
+        document.addEventListener("keydown", onKeyPressHandler);
+        document.querySelector(".timer__container").addEventListener("click", event => {
+            if (event.target.classList[0] === "clock__button") {
+                let buttonValue = parseInt(event.target.innerHTML);
+                if (!isNaN(buttonValue)) {
+                    addTime(buttonValue);
+                } else if (event.target.classList[1] === "clear__button") {
+                    reset();
+                } else {
+                    startTimer();
+                }
+            }
+        })
+    }
     this.createInactiveClock = () => {
         document.querySelector(".simple__timer").innerHTML = `
             <div class="timer__container">
                 <div class="timer">
-                    <span class="time">${clockTime()}</span> 
+                    <span class="time">${getTimerFormatted()}</span> 
                 </div>
                 <div class="timer__buttons__container">
                     <button class="clock__button">1</button>
@@ -140,49 +172,19 @@ const simpleTimer = function() {
                     <button class="clock__button">0</button>
                 </div>
             </div>`;
-        var onKeyHandler = input => {
-            if (!isNaN(parseInt(input.key))) {
-                addTime(input.key);
-            } 
-            else if (input.code === "Backspace") {
-                awaitResetConfirm();
-            } 
-            else if (input.code === "Space") {
-                pause();
-            } 
-            else if (input.key === "Enter") {
-                start();
-            }
-        }
-        document.addEventListener("keydown", onKeyHandler);
-        document.querySelector(".timer__container").addEventListener("click", event => {
-            if (event.target.classList[0] === "clock__button") {
-                let buttonValue = parseInt(event.target.innerHTML);
-                if (!isNaN(buttonValue)) {
-                    addTime(buttonValue);
-                } else {
-                    reset();
-                }
-            }
-        })
-    }
-    var createActiveClock = () => {
-        document.querySelector(".simple__timer").innerHTML = `
-        <div class="timer">
-            <div class="base-timer">
-                <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <g class="base-timer__circle">
-                    <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
-                    </g>
-                </svg>
-                <span id="base-timer-label" class="base-timer__label">
-                    ${clockTime()} 
-                </span>
-            </div>
-        </div>`
+        attachEventListeners();
     }
     this.removeHandlers = () => {
-        document.removeEventListener("keydown", onKeyHandler);
+        document.removeEventListener("keydown", onKeyPressHandler);
+    }
+    this.onTimerEnd = callback => {
+        callback();
+    }
+    this.isActive = () => {
+        return isActive;
+    }
+    this.getTimeLeft = () => {
+        return secondsLeft;
     }
 }
 export { simpleTimer };
