@@ -17,67 +17,62 @@ var playMusic = () => {
 }
 mainClock.onTimerEnd = playMusic;
 
-document.addEventListener("click", event => {
-    const navbarMenu = document.querySelector("#navbar__menu").classList;
-    const mobileDropdown = navbar.querySelector(".navbar__toggle").classList;
+var toggleMobileMenu = () => {
+    const navbarMenu = document.querySelector("#navbar__menu").classList.toggle("active");
+    const mobileDropdown = navbar.querySelector(".navbar__toggle").classList.toggle("active");
+    navbarMenu.toggle("active");
+    mobileDropdown.toggle("active");
+}
 
+document.addEventListener("click", event => {
     if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle" || 
                 event.target.classList[0] === "navbar__toggle__highlight") {
-        navbarMenu.toggle("active");
-        mobileDropdown.toggle("active");
-    } else if (navbarMenu[0] === "active" && event.target.classList[0] !== "tabs") {
-        navbarMenu.toggle("active");
-        mobileDropdown.toggle("active");
+        toggleMobileMenu();
+    } else if (document.querySelector("#navbar__menu").classList[0] === "active" && event.target.classList[0] !== "tabs") {
+        toggleMobileMenu();
     }
-})
-
-{
+});
+var resetOldIcons = () =>{
     const featureSelector = document.querySelector(".feature__selector");
-    const stopwatchBtn = featureSelector.querySelector("#stopwatch__selector");
-    const clockBtn = featureSelector.querySelector("#clock__selector");
-    const calendarBtn = featureSelector.querySelector("#calendar__selector");
-
-    var swapIcons = event => {
-        if (calendarBtn.classList[0] === "active") {
-            calendarBtn.classList.toggle("active");
-            
-        } else {
-            clockBtn.classList[0] === "active" ? clockBtn.classList.toggle("active") 
-                : stopwatchBtn.classList.toggle("active");   
-        }
-        event.target.classList.toggle("active");
-    }
-    var removeOldFunctionality = () => {
-            mainClock.removeHandlers();
-            stopwatch.removeHandlers();
-            const timerContainer = document.querySelector(".simple__timer");
-            const stopwatchContainer = document.querySelector(".simple__stopwatch");
-            const calendarContainer = document.querySelector(".simple__calendar");
-            if (timerContainer && timerContainer.firstChild) {
-                timerContainer.replaceChildren();
-            } else if (stopwatchContainer && stopwatchContainer.firstChild) {
-                stopwatchContainer.replaceChildren();
-            } else if (calendarContainer && calendarContainer.firstChild) {
-                calendarContainer.replaceChildren();
-            }
-    }
-    var getNewFunctionality = event => {
-        if (event.target.id === "clock__selector") {
-            mainClock.createClock();
-        } else if (event.target.id === "stopwatch__selector") {
-            stopwatch.createStopwatch();
-        } else {
-            calendar.createCalendar();
-        }
-    }
-    featureSelector.addEventListener("click", event => {
-        if (event.target.classList[0] !== "active") {
-            swapIcons(event);
-            removeOldFunctionality();
-            getNewFunctionality(event);
-        }
-    })
+    featureSelector.querySelector("#stopwatch__selector").classList = "";
+    featureSelector.querySelector("#clock__selector").classList = "";
+    featureSelector.querySelector("#calendar__selector").classList = "";
 }
+var swapIcons = event => {
+    resetOldIcons();
+    event.target.classList.toggle("active");
+}
+var removeOldFunctionality = () => {
+    const timerContainer = document.querySelector(".simple__timer");
+    const stopwatchContainer = document.querySelector(".simple__stopwatch");
+    const calendarContainer = document.querySelector(".simple__calendar");
+
+    if (timerContainer && timerContainer.firstChild) {
+        timerContainer.replaceChildren();
+    } else if (stopwatchContainer && stopwatchContainer.firstChild) {
+        stopwatchContainer.replaceChildren();
+    } else if (calendarContainer && calendarContainer.firstChild) {
+        calendarContainer.replaceChildren();
+    }
+    mainClock.removeHandlers();
+    stopwatch.removeHandlers();
+}
+var getNewFunctionality = event => {
+    if (event.target.id === "clock__selector") {
+        mainClock.createClock();
+    } else if (event.target.id === "stopwatch__selector") {
+        stopwatch.createStopwatch();
+    } else {
+        calendar.createCalendar();
+    }
+}
+document.querySelector(".feature__selector").addEventListener("click", event => {
+    if (event.target.classList[0] !== "active") {
+        swapIcons(event);
+        removeOldFunctionality();
+        getNewFunctionality(event);
+    }
+});
 
 // figure out accessability and why they keep fucking up my buttons
 

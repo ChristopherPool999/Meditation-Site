@@ -1,30 +1,28 @@
 "use strict"; 
 const simpleCalendar = function() {
 
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
-            "October", "November", "December"];
-    const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    let selectedDate = new Date();
-    const todaysDate = [selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear()];
-    let selectedMonth = todaysDate[1];
-    let selectedYear = todaysDate[2];
+    let displayedDate = new Date();
+    const todaysDate = [displayedDate.getDate(), displayedDate.getMonth(), displayedDate.getFullYear()];
+    let displayedMonth = todaysDate[1];
+    let displayedYear = todaysDate[2];
 
-    var previousMonthDays = () => {
-        return selectedMonth > 0 ? daysInEachMonth[selectedMonth - 1] : daysInEachMonth[11];
-    }
     var getCalendarFormat = () => {
-        selectedDate.setFullYear(selectedYear, selectedMonth, 1);
-        if ((selectedYear % 4) === 0) {
+        const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        displayedDate.setFullYear(displayedYear, displayedMonth, 1);
+        if ((displayedYear % 4) === 0) {
             daysInEachMonth[1] = 29;
         }
-        // first calendar date is the previous sunday to the 1st of the month. Will be last week if 1st is a sunday.
-        let calendarDate = previousMonthDays() - (selectedDate.getDay() > 0 ? selectedDate.getDay() - 1 : 6);
+        // first calendar date is the previous sunday to the 1st of the month. Will be a week behind from 1st if 1st is a sunday.
+        const previousMonthDays = displayedMonth > 0 ? daysInEachMonth[displayedMonth - 1] : daysInEachMonth[11];
+        let calendarDaysBefore1st = displayedDate.getDay() > 0 ? displayedDate.getDay() - 1 : 6;
+        let calendarDate = previousMonthDays - calendarDaysBefore1st;
         const calendarDaysFormat = [];
-        while (calendarDate <= previousMonthDays(selectedMonth)) {
+
+        while (calendarDate <= previousMonthDays) {
             calendarDaysFormat.push(calendarDate++);                             
         }
         calendarDate = 1;
-        while (calendarDate <= daysInEachMonth[selectedMonth]) {
+        while (calendarDate <= daysInEachMonth[displayedMonth]) {
             calendarDaysFormat.push(calendarDate++);
         }
         calendarDate = 1;
@@ -37,49 +35,50 @@ const simpleCalendar = function() {
         let isCurrentMonth = false;
         const calendarDays = getCalendarFormat();
         for (let i = 0; i < 42; i++) {
+            const isCurrentDay = calendarDays[i] === todaysDate[0] && displayedMonth === todaysDate[1] 
+                    && displayedYear === todaysDate[2];
             grid[i].innerHTML = calendarDays[i];
             if (calendarDays[i] === 1) {
                 isCurrentMonth = !isCurrentMonth;
             }
-            isCurrentMonth ? grid[i].style.color = "white" : grid[i].style.color = "rgb(154, 154, 154)";
             if (isCurrentMonth) {
-                if (calendarDays[i] === todaysDate[0] && selectedMonth === todaysDate[1] 
-                            && selectedYear === todaysDate[2] ) { 
+                if (isCurrentDay) { 
                     grid[i].classList.toggle("today");
-                } 
-                else if (grid[i].classList[1] === "today") {
+                } else if (grid[i].classList[1] === "today") {
                     grid[i].classList.toggle("today");
                 }
             }
+            isCurrentMonth ? grid[i].style.color = "white" : grid[i].style.color = "rgb(154, 154, 154)";
         }
     }
     var updateHeader = monthElement => {
-        monthElement.innerHTML = (selectedYear === todaysDate[2]) ? 
-                monthNames[selectedMonth] : [monthNames[selectedMonth], selectedYear].join(" ");
-        (selectedMonth === todaysDate[1] && selectedYear === todaysDate[2]) ? 
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
+                "October", "November", "December"];
+
+        monthElement.innerHTML = (displayedYear === todaysDate[2]) ? 
+                monthNames[displayedMonth] : [monthNames[displayedMonth], displayedYear].join(" ");
+        displayedMonth === todaysDate[1] && displayedYear === todaysDate[2] ? 
                 monthElement.style.color = "white" : monthElement.style.color = "grey";
     }
-    var previousMonth = () => {
-        if (selectedMonth <= 0) {
-            selectedMonth = 11;
-            selectedYear--;
-        } 
-        else if (selectedMonth > 0) {
-            selectedMonth--;
+    var changeToPreviousMonth = () => {
+        if (displayedMonth <= 0) {
+            displayedMonth = 11;
+            displayedYear--;
+        } else if (displayedMonth > 0) {
+            displayedMonth--;
         }
-        updateCalendar();
+        updateCalendarInterface();
     }
-    var nextMonth = () => {
-        if (selectedMonth >= 11) {
-            selectedMonth = 0;
-            selectedYear++;
-        } 
-        else if (selectedMonth < 11) {
-            selectedMonth++;
+    var changeToNextMonth = () => {
+        if (displayedMonth >= 11) {
+            displayedMonth = 0;
+            displayedYear++;
+        } else if (displayedMonth < 11) {
+            displayedMonth++;
         }
-        updateCalendar();
+        updateCalendarInterface();
     }
-    var updateCalendar = () => {
+    var newCalendarFragment = () => {
         const calendarNode = document.querySelector(".simple__calendar");
         const calendarCopy = document.createDocumentFragment();
         calendarCopy.appendChild(calendarNode.cloneNode(true));
@@ -88,17 +87,22 @@ const simpleCalendar = function() {
         const monthName = calendarCopy.querySelector(".calendar__month");
         updateHeader(monthName);
         updateDates(calendarGrid);
-        document.body.replaceChild(calendarCopy, calendarNode);
+        return calendarCopy;
+    }
+    var updateCalendarInterface = () => {
+        const calendarNode = document.querySelector(".simple__calendar");
+        const updatedNode = newCalendarFragment();
+        document.body.replaceChild(updatedNode, calendarNode);
 
         const calendarHeader = document.querySelector(".calendar__header");
         calendarHeader.addEventListener("click", event => {
             if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
-                previousMonth();
+                changeToPreviousMonth();
             }
             if (event.target.id === "next__month" || event.target.id === "next__month__bar") {
-                nextMonth();
+                changeToNextMonth();
             }
-        })
+        });
     }
     var getCalendarHtml = () => {
         return `
@@ -140,7 +144,7 @@ const simpleCalendar = function() {
     }
     this.createCalendar = () => {
         document.querySelector(".simple__calendar").innerHTML = getCalendarHtml();
-        updateCalendar();
+        updateCalendarInterface();
     }
 }
 

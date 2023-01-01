@@ -3,13 +3,13 @@
 const simpleTimer = function() {
     let timerValues = [0, 0, 0, 0, 0, 0];
     let secondsLeft = 0;
+    let isEmpty = true;
     let isActive = false;
     let hasStarted = false;
-    let isEmpty = true;
-    const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
 
     var updateTimerValues = reformatTimerValues => {
         if (timerValues[5] === 0 || reformatTimerValues) {
+            const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
             let secondsCopy = secondsLeft;
             let newTimer = [0, 0, 0, 0, 0, 0];
             for (let i = 0; i < newTimer.length; i++) {
@@ -28,28 +28,26 @@ const simpleTimer = function() {
                 + ":" + timerValues[4] +  timerValues[5];
     }
     var updateInterface = () => {
-        if (!isActive){
-            if (document.querySelector(".simple__timer").firstChild) {
-                document.querySelector(".time").innerHTML = getTimerFormatted();
-            }
-        } else {
-            if (document.querySelector(".simple__timer").firstChild) {
-                document.querySelector(".base-timer__label").innerHTML = getTimerFormatted();
-            }
-        }
+            isActive ? document.querySelector(".base-timer__label").innerHTML = getTimerFormatted()  
+                    : document.querySelector(".time").innerHTML = getTimerFormatted();
     }
-    var reset = () => { 
-        document.querySelector(".start__button").classList.toggle("active");
+    var resetProperties = () => {
         timerValues = [0, 0, 0, 0, 0, 0];
         isActive = false;
         secondsLeft = 0;
         isEmpty = true;
         hasStarted = false;
-        updateInterface();
+    }
+    var resetTimer = () => { 
+        resetProperties();
+        if (document.querySelector(".simple__timer").firstChild) {
+            document.querySelector(".start__button").classList.toggle("active");
+            updateInterface();
+        }
     }  
-    { 
+    var countDown = (() => {
         let clockLoop = null;
-        var countDown = () => {
+        return function() {
             if (clockLoop === null) {
                 clockLoop = setInterval(() => {
                     if (!isActive) {
@@ -59,14 +57,57 @@ const simpleTimer = function() {
                     }
                     secondsLeft--;
                     updateTimerValues();
-                    updateInterface();
+                    if (document.querySelector(".simple__timer").firstChild) {
+                        updateInterface();
+                    }
                     if (secondsLeft === 0) {
                         this.onTimerEnd();
-                        reset();
+                        resetTimer();
                     }
                 }, 1000);
             }
         }
+    })();
+    var findTimeRemaining = () => {
+        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+        let totalSeconds = 0;
+        for (let i = 0; i < timerValues.length; i++) {
+            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
+        }
+        return totalSeconds;
+    }
+    var canAddTime = input => {
+        return !isNaN(parseInt(input)) 
+                && !hasStarted 
+                && timerValues[0] === 0 
+                && !isEmpty || input !== "0";
+    } 
+    var addTime = input => {
+        if (isEmpty){
+            document.querySelector(".start__button").classList.toggle("active");
+        }
+        isEmpty = false;
+        timerValues.shift();
+        timerValues.push(input);
+        secondsLeft = findTimeRemaining();
+        if (document.querySelector(".simple__timer").firstChild) {
+            updateInterface();
+        }
+    }
+    var confirmResetButton = (() => {
+        let resetAttempts = 0;
+        return function() {
+            resetAttempts++;
+            setTimeout(function() {
+                resetAttempts = 0;
+            }, 500);
+            if (resetAttempts === 2) {
+                resetTimer(); 
+            }
+        }
+    })();
+    var pauseTimer = () => {
+        isActive ? isActive = false : countDown();
     }
     var timerStartedHtml = () => {
         return `
@@ -94,65 +135,21 @@ const simpleTimer = function() {
                 </div>
             </div>`
     }
-    var findTimeRemaining = () => {
-        let totalSeconds = 0;
-        for (let i = 0; i < timerValues.length; i++) {
-            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
-        }
-        return totalSeconds;
-    }
-    var addTime = input => {
-        if (!hasStarted && timerValues[0] === 0) 
-            if (input !== "0" || !isEmpty) {
-                if (isEmpty){
-                    document.querySelector(".start__button").classList.toggle("active");
-                }
-                isEmpty = false;
-                timerValues.shift();
-                timerValues.push(input);
-                secondsLeft = findTimeRemaining();
-                updateInterface();
-            }
-    }
-    { 
-        let resetAttempts = 0;
-        var confirmResetButton = () => {
-            if (!isEmpty) {
-                resetAttempts++;
-                setTimeout(function() {
-                    resetAttempts = 0;
-                }, 500);
-                if (resetAttempts === 2) {
-                    reset(); 
-                }
-            }
-        }
-    }   
-    var pauseTimer = () => {
-        if (hasStarted) {
-            isActive ? isActive = false : countDown();
-        }
-    }
     var startTimer = () => {
-        if (!isEmpty && !isActive) {
-            updateTimerValues(true);
-            document.querySelector(".simple__timer").innerHTML = timerStartedHtml();
-            countDown();
-            isActive = true;
-            hasStarted = true;
-        }
+        updateTimerValues(true);
+        document.querySelector(".simple__timer").innerHTML = timerStartedHtml();
+        countDown();
+        isActive = true;
+        hasStarted = true;
     }
     var onKeyPressHandler = input => {
-        if (!isNaN(parseInt(input.key))) {
+        if (canAddTime(input.key)) {
             addTime(input.key);
-        } 
-        else if (input.code === "Backspace") {
+        } else if (input.code === "Backspace" && !isEmpty) {
             confirmResetButton();
-        } 
-        else if (input.code === "Space") {
+        } else if (input.code === "Space" && hasStarted) {
             pauseTimer();
-        } 
-        else if (input.key === "Enter") {
+        } else if (input.key === "Enter" && !isEmpty && !isActive) {
             startTimer();
         }
     }
@@ -160,16 +157,14 @@ const simpleTimer = function() {
         document.addEventListener("keydown", onKeyPressHandler);
         document.querySelector(".timer__container").addEventListener("click", event => {
             let target = event.target.classList[0];
-            if (target === "number__button") {
-                if (!isNaN(parseInt(event.target.innerHTML))) {
-                    addTime(event.target.innerHTML);
-                } 
-            } else if (target === "clear__button") {
-                reset();
-            } else if (target === "start__button") {
+            if (target === "number__button" && canAddTime(event.target.innerHTM)) {
+                addTime(event.target.innerHTML);
+            } else if (target === "clear__button" && !isEmpty) {
+                resetTimer();
+            } else if (target === "start__button" && !isEmpty && !isActive) {
                 startTimer();
             }
-        })
+        });
     }
     var inactiveTimerHtml = () => {
         let startButtonClassName = isEmpty ? "start__button" : "start__button active";

@@ -6,44 +6,52 @@ const simpleStopwatch = function() {
     let isActive = false;
     let hasStarted = false;
     let onEnterKeyHandler = null;
-    {   
-        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
-        var updateClockNumbers = () => {
-            if (clockNumbers[5] === 9) {
-                let secondsCopy = seconds;
-                let newTimer = [0, 0, 0, 0, 0, 0];
-                for (let i = 0; i < 6; i++) {
-                    if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                        newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                        secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
-                    }
+
+    var updateClockNumbers = () => {
+        if (clockNumbers[5] === 9) {
+            const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+            let newTimer = [0, 0, 0, 0, 0, 0];
+            let secondsCopy = seconds;
+            for (let i = 0; i < 6; i++) {
+                if (secondsCopy >= timerUnitsAsSeconds[i]) {
+                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
+                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
                 }
-                clockNumbers = newTimer;
-            } else {
-                clockNumbers[5]++;
             }
-        }   
+            clockNumbers = newTimer;
+        } else {
+            clockNumbers[5]++;
+        }
+    }   
+    var resetProperties = () => {
+        clockNumbers = [0, 0, 0, 0, 0, 0];
+        isActive = false;
+        seconds = 0;
+        hasStarted = false;
+    }
+    var resetNodeClasses = () => {
+        const toggleStartBtn = document.querySelector(".toggle__stopwatch");
+        toggleStartBtn.classList = "toggle__stopwatch";
+        toggleStartBtn.innerHTML = "Start";
+        document.querySelector(".clear__stopwatch").classList = "clear__stopwatch";
     }
     var clockTime = () => {
         return "" + clockNumbers[0] +  clockNumbers[1] +  ":" + clockNumbers[2] + clockNumbers[3] 
                 + ":" + clockNumbers[4] +  clockNumbers[5];
     }
     var updateInterface = () => {
+        document.querySelector(".time").innerHTML = clockTime();
+    }
+    var resetStopwatch = () => { 
+        resetProperties();
+        resetNodeClasses();
         if (document.querySelector(".simple__stopwatch").firstChild) {
-            document.querySelector(".time").innerHTML = clockTime();
+            updateInterface();
         }
     }
-    var reset = () => { 
-        clockNumbers = [0, 0, 0, 0, 0, 0];
-        isActive = false;
-        seconds = 0;
-        hasStarted = false;
-        updateInterface();
-        toggleClassOnReset();
-    }
-    { 
+    var countDown = (() => {
         let clockLoop = null;
-        var countDown = () => {
+        return function() {
             isActive = true;
             if (clockLoop === null) {
                 clockLoop = setInterval(() => {
@@ -54,61 +62,55 @@ const simpleStopwatch = function() {
                     }
                     seconds++;
                     updateClockNumbers();
-                    updateInterface();
+                    if (document.querySelector(".simple__stopwatch").firstChild) {
+                        updateInterface();
+                    }
                 }, 1000);
             }
         }
-    }
-    var pause = () => {
-        toggleClassOnStart(); 
-        isActive ? isActive = false : countDown();
-    }
-    var start = () => {
-        toggleClassOnStart(); 
-        hasStarted = true;
-        isActive = true;
-        countDown();
-    }
-    { 
-        let clearAttempts = 0;
-        var clear = () => {
-            if (hasStarted) {
-                clearAttempts++;
-                setTimeout(function() {
-                    clearAttempts = 0;
-                }, 500);
-                if (clearAttempts === 2) {
-                    reset(); 
-                }
-            }
-        }
-    }
-    onEnterKeyHandler = input => {
-        if (input.code === "Backspace") {
-            clear();
-        } 
-        else if (input.code === "Space" && hasStarted) {
-            pause();
-        } 
-        else if (input.key === "Enter" && !isActive) {
-            start();
-        }
-    }
-    var toggleClassOnStart = () => {
+    })();
+    var toggleClassWhenActive = () => {
         if (!hasStarted) {
             document.querySelector(".clear__stopwatch").classList.toggle("active");
             document.querySelector(".toggle__stopwatch").classList.toggle("has__started");
         }
         const stopwatchToggle = document.querySelector(".toggle__stopwatch");
         stopwatchToggle.classList.toggle("active");
-        let toggleBtnText = isActive ? "Start" : "Pause";
-        stopwatchToggle.innerHTML = toggleBtnText;
+        let buttonText = isActive ? "Start" : "Pause";
+        stopwatchToggle.innerHTML = buttonText;
     }
-    var toggleClassOnReset = () => {
-        const toggleStartBtn = document.querySelector(".toggle__stopwatch");
-        toggleStartBtn.classList = "toggle__stopwatch";
-        toggleStartBtn.innerHTML = "Start";
-        document.querySelector(".clear__stopwatch").classList = "clear__stopwatch";
+    var clear = (() => {
+        let clearAttempts = 0;
+        return function() {
+            if (hasStarted) {
+                clearAttempts++;
+                setTimeout(function() {
+                    clearAttempts = 0;
+                }, 500);
+                if (clearAttempts === 2) {
+                    resetStopwatch(); 
+                }
+            }
+        }
+    })();
+    var pause = () => {
+        toggleClassWhenActive(); 
+        isActive ? isActive = false : countDown();
+    }
+    var start = () => {
+        toggleClassWhenActive(); 
+        hasStarted = true;
+        isActive = true;
+        countDown();
+    }
+    onEnterKeyHandler = input => {
+        if (input.code === "Backspace") {
+            clear();
+        } else if (input.code === "Space" && hasStarted) {
+            pause();
+        } else if (input.key === "Enter" && !isActive) {
+            start();
+        }
     }
     var addHandlers = () => {
         document.addEventListener("keydown", onEnterKeyHandler);
@@ -119,9 +121,9 @@ const simpleStopwatch = function() {
                 isActive ? pause() : start();
             }
             if (event.target.classList[0] === "clear__stopwatch") {                
-                reset();
+                resetStopwatch();
             }
-        })
+        });
     }   
     this.createStopwatch = () => {
         let toggleStopwatchClass = "toggle__stopwatch";
@@ -131,8 +133,7 @@ const simpleStopwatch = function() {
         if (hasStarted && !isActive) {
             toggleStopwatchClass = "toggle__stopwatch has__started";
             clearStopwatchClass = "clear__stopwatch active";
-        }
-        else if (isActive) {
+        } else if (isActive) {
             toggleStopwatchClass = "toggle__stopwatch has__started active";
             clearStopwatchClass = "clear__stopwatch active";
             toggleStopwatchText = "Pause";
