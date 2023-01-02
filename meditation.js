@@ -10,10 +10,10 @@ mainClock.createClockUI();
 
 var playMusic = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
-    audio.play();
-    if (document.querySelector(".simple__timer").firstChild) {
-        document.querySelector(".play__button").classList.toggle("active");
-    }
+    // audio.play();
+    // if (document.querySelector(".simple__timer").firstChild) {
+    //     document.querySelector(".play__button").classList.toggle("active");
+    // } needs to be replaced now that we are using circle
 }
 mainClock.onTimerEnd = playMusic;
 
@@ -32,14 +32,14 @@ document.addEventListener("click", event => {
         toggleMobileMenu();
     }
 });
-var resetOldIcons = () =>{
+var resetIcons = () =>{
     const featureSelector = document.querySelector(".feature__selector");
     featureSelector.querySelector("#stopwatch__selector").classList = "";
     featureSelector.querySelector("#clock__selector").classList = "";
     featureSelector.querySelector("#calendar__selector").classList = "";
 }
 var swapIcons = event => {
-    resetOldIcons();
+    resetIcons();
     event.target.classList.toggle("active");
 }
 var removeOldFunctionality = () => {

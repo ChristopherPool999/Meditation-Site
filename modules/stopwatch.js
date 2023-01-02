@@ -29,7 +29,7 @@ const simpleStopwatch = function() {
         seconds = 0;
         hasStarted = false;
     }
-    var resetNodeClasses = () => {
+    var resetButtonClasses = () => {
         const toggleStartBtn = document.querySelector(".toggle__stopwatch");
         toggleStartBtn.classList = "toggle__stopwatch";
         toggleStartBtn.innerHTML = "Start";
@@ -44,7 +44,7 @@ const simpleStopwatch = function() {
     }
     var resetStopwatch = () => { 
         resetProperties();
-        resetNodeClasses();
+        resetButtonClasses();
         if (document.querySelector(".simple__stopwatch").firstChild) {
             updateInterface();
         }
