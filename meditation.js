@@ -6,7 +6,7 @@ import { simpleStopwatch } from "./modules/stopwatch.js";
 const calendar = new simpleCalendar();
 const stopwatch = new simpleStopwatch();
 const mainClock = new simpleTimer();
-mainClock.createClock();
+mainClock.createClockUI();
 
 var playMusic = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
@@ -59,7 +59,7 @@ var removeOldFunctionality = () => {
 }
 var getNewFunctionality = event => {
     if (event.target.id === "clock__selector") {
-        mainClock.createClock();
+        mainClock.createClockUI();
     } else if (event.target.id === "stopwatch__selector") {
         stopwatch.createStopwatch();
     } else {

@@ -2,6 +2,7 @@
 
 const simpleTimer = function() {
     let timerValues = [0, 0, 0, 0, 0, 0];
+    let timerLength = 0;
     let secondsLeft = 0;
     let isEmpty = true;
     let isActive = false;
@@ -23,13 +24,9 @@ const simpleTimer = function() {
             timerValues[5]--;
         }
     }   
-    var getTimerFormatted = () => {
+    var getTimeLeftFormatted = () => {
         return "" + timerValues[0] +  timerValues[1] +  ":" + timerValues[2] + timerValues[3] 
                 + ":" + timerValues[4] +  timerValues[5];
-    }
-    var updateInterface = () => {
-            isActive ? document.querySelector(".base-timer__label").innerHTML = getTimerFormatted()  
-                    : document.querySelector(".time").innerHTML = getTimerFormatted();
     }
     var resetProperties = () => {
         timerValues = [0, 0, 0, 0, 0, 0];
@@ -42,9 +39,10 @@ const simpleTimer = function() {
         resetProperties();
         if (document.querySelector(".simple__timer").firstChild) {
             document.querySelector(".start__button").classList.toggle("active");
-            updateInterface();
+            document.querySelector(".time").innerHTML = getTimeLeftFormatted();
         }
     }  
+    // isnt resetting the timeInterval at 0 seconds
     var countDown = (() => {
         let clockLoop = null;
         return function() {
@@ -58,7 +56,7 @@ const simpleTimer = function() {
                     secondsLeft--;
                     updateTimerValues();
                     if (document.querySelector(".simple__timer").firstChild) {
-                        updateInterface();
+                        document.querySelector(".simple__timer").innerHTML = getActiveTimerUI();
                     }
                     if (secondsLeft === 0) {
                         this.onTimerEnd();
@@ -68,19 +66,11 @@ const simpleTimer = function() {
             }
         }
     })();
-    var findTimeRemaining = () => {
-        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
-        let totalSeconds = 0;
-        for (let i = 0; i < timerValues.length; i++) {
-            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
-        }
-        return totalSeconds;
-    }
     var canAddTime = input => {
         return !isNaN(parseInt(input)) 
                 && !hasStarted 
                 && timerValues[0] === 0 
-                && !isEmpty || input !== "0";
+                && (!isEmpty || input !== "0");
     } 
     var addTime = input => {
         if (isEmpty){
@@ -89,9 +79,8 @@ const simpleTimer = function() {
         isEmpty = false;
         timerValues.shift();
         timerValues.push(input);
-        secondsLeft = findTimeRemaining();
         if (document.querySelector(".simple__timer").firstChild) {
-            updateInterface();
+            document.querySelector(".time").innerHTML = getTimeLeftFormatted();
         }
     }
     var confirmResetButton = (() => {
@@ -109,16 +98,30 @@ const simpleTimer = function() {
     var pauseTimer = () => {
         isActive ? isActive = false : countDown();
     }
-    var timerStartedHtml = () => {
+    var getTimerLength = () => {
+        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+        let totalSeconds = 0;
+        for (let i = 0; i < timerValues.length; i++) {
+            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
+        }
+        return totalSeconds;
+    }
+    var getPercentTimeLeft = () => {
+        return secondsLeft / timerLength;
+    }
+    var getActiveTimerUI = () => {
+        const circleRadius = 45;
+        const circleLength = Math.round(2 * Math.PI * circleRadius);
+        let circleRemaining = Math.round(circleLength * getPercentTimeLeft());
         return `
             <div class="timer">
                 <div class="base-timer">
                     <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                         <g class="base-timer__circle">
-                            <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45" />
+                            <circle class="base-timer__path-elapsed" cx="50" cy="50" r="${circleRadius}" />
                             <path
                                 id="base-timer-path-remaining"
-                                stroke-dasharray="283"
+                                stroke-dasharray="${circleRemaining} ${circleLength}"
                                 class="base-timer__path-remaining"
                                 d="
                                   M 50, 50
@@ -130,14 +133,16 @@ const simpleTimer = function() {
                         </g>
                     </svg>
                     <span id="base-timer-label" class="base-timer__label">
-                        ${getTimerFormatted()} 
+                        ${getTimeLeftFormatted()} 
                     </span>
                 </div>
             </div>`
     }
     var startTimer = () => {
+        timerLength = getTimerLength();
+        secondsLeft = timerLength;
         updateTimerValues(true);
-        document.querySelector(".simple__timer").innerHTML = timerStartedHtml();
+        document.querySelector(".simple__timer").innerHTML = getActiveTimerUI();
         countDown();
         isActive = true;
         hasStarted = true;
@@ -157,8 +162,9 @@ const simpleTimer = function() {
         document.addEventListener("keydown", onKeyPressHandler);
         document.querySelector(".timer__container").addEventListener("click", event => {
             let target = event.target.classList[0];
-            if (target === "number__button" && canAddTime(event.target.innerHTM)) {
-                addTime(event.target.innerHTML);
+            let timerKey = event.target.innerHTML;
+            if (target === "number__button" && canAddTime(timerKey)) {
+                addTime(timerKey);
             } else if (target === "clear__button" && !isEmpty) {
                 resetTimer();
             } else if (target === "start__button" && !isEmpty && !isActive) {
@@ -166,12 +172,12 @@ const simpleTimer = function() {
             }
         });
     }
-    var inactiveTimerHtml = () => {
+    var getUnstartedTimerUI = () => {
         let startButtonClassName = isEmpty ? "start__button" : "start__button active";
         return `
             <div class="timer__container">
                 <div class="timer">
-                    <span class="time">${getTimerFormatted()}</span> 
+                    <span class="time">${getTimeLeftFormatted()}</span> 
                 </div>
                 <div class="timer__buttons__container">
                     <button class="number__button">1</button>
@@ -189,8 +195,8 @@ const simpleTimer = function() {
                 </div>
             </div>`;
     }
-    this.createClock =() => {
-        document.querySelector(".simple__timer").innerHTML = (isActive) ? timerStartedHtml() : inactiveTimerHtml();
+    this.createClockUI = () => {
+        document.querySelector(".simple__timer").innerHTML = (isActive) ? getActiveTimerUI() : getUnstartedTimerUI();
         attachEventListeners();
     }
     this.removeHandlers = () => {
