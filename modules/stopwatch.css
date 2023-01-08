@@ -13,6 +13,12 @@
     display: flex;
 }
 
+.milliseconds {
+    position: absolute;
+    font-size: 1rem;
+    transform: translate(100px, 30px);
+}
+
 .stopwatch__buttons__container {
     display: flex;
     align-items: center;
@@ -20,7 +26,7 @@
     margin: auto;
 }
 
-.toggle__stopwatch {
+.toggle__start {
     height: 50px;
     width: 80px;
     transform: translateX(40px);
@@ -36,11 +42,11 @@
     z-index: 2;
 }
 
-.toggle__stopwatch.active {
+.toggle__start.active {
     background-color: rgb(121, 30, 12);
 }
 
-.toggle__stopwatch.has__started {
+.toggle__start.has__started {
     transform: translateX(-5px);
 }
 

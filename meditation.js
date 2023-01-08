@@ -6,6 +6,7 @@ import { simpleStopwatch } from "./modules/stopwatch.js";
 const calendar = new simpleCalendar();
 const stopwatch = new simpleStopwatch();
 const mainClock = new simpleTimer();
+console.log(mainClock);
 mainClock.createClockUI();
 
 var playMusic = () => {
@@ -23,7 +24,6 @@ var toggleMobileMenu = () => {
     navbarMenu.toggle("active");
     mobileDropdown.toggle("active");
 }
-
 document.addEventListener("click", event => {
     if (event.target.classList[0] === "bar" || event.target.classList[0] === "navbar__toggle" || 
                 event.target.classList[0] === "navbar__toggle__highlight") {

@@ -10,7 +10,8 @@ const simpleTimer = function() {
 
     var updateTimerValues = reformatTimerValues => {
         if (timerValues[5] === 0 || reformatTimerValues) {
-            const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+            const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1];
+            // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds. Ex: 09 : 17: 36
             let secondsCopy = secondsLeft;
             let newTimer = [0, 0, 0, 0, 0, 0];
             for (let i = 0; i < newTimer.length; i++) {
@@ -116,7 +117,8 @@ const simpleTimer = function() {
         isActive ? isActive = false : countDown();
     }
     var getTimerLength = () => {
-        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1]; // 10 hour, 1 hour, 10 min, 1 min, etc in seconds
+        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1];
+        // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds. Ex: 09 : 17: 36
         let totalSeconds = 0;
         for (let i = 0; i < timerValues.length; i++) {
             totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
@@ -212,6 +214,7 @@ const simpleTimer = function() {
                 </div>
             </div>`;
     }
+    // still being implemented
     var addHandlersIfActive = () => {
 
     }

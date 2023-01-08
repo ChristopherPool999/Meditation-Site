@@ -6,59 +6,92 @@ const simpleCalendar = function() {
     let displayedMonth = todaysDate[1];
     let displayedYear = todaysDate[2];
 
-    var getCalendarFormat = () => {
-        const daysInEachMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        displayedDate.setFullYear(displayedYear, displayedMonth, 1);
-        if ((displayedYear % 4) === 0) {
-            daysInEachMonth[1] = 29;
-        }
-        // first calendar date is the previous sunday to the 1st of the month. Will be a week behind from 1st if 1st is a sunday.
-        const previousMonthDays = displayedMonth > 0 ? daysInEachMonth[displayedMonth - 1] : daysInEachMonth[11];
-        let calendarDaysBefore1st = displayedDate.getDay() > 0 ? displayedDate.getDay() - 1 : 6;
-        let calendarDate = previousMonthDays - calendarDaysBefore1st;
-        const calendarDaysFormat = [];
+    var isLeapYear = () => {
+        return (displayedYear % 4) === 0;
+    }
+    var getDaysInMonth = () => {
+        return isLeapYear() ?
+            [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] :
+            [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    }
+    var getPreviousMonthDays = () => {
+        return displayedMonth > 0 ? getDaysInMonth()[displayedMonth - 1] : 
+                getDaysInMonth()[11];
+    }
+    var getFirstGridDate = () => {
+        // first date in calendar is the previous sunday to the 1st of the month.
+        let daysBefore1st = displayedDate.getDay() > 0 ? displayedDate.getDay() : 7;
+        return getPreviousMonthDays() - daysBefore1st + 1;
+    }
+    var getGridFormat = () => {
+        let calendarDate = getFirstGridDate();
+        const daysInGridFormat = [];
 
-        while (calendarDate <= previousMonthDays) {
-            calendarDaysFormat.push(calendarDate++);                             
+        while (calendarDate <= getPreviousMonthDays()) {
+            daysInGridFormat.push(calendarDate++);                             
         }
         calendarDate = 1;
-        while (calendarDate <= daysInEachMonth[displayedMonth]) {
-            calendarDaysFormat.push(calendarDate++);
+        while (calendarDate <= getDaysInMonth()[displayedMonth]) {
+            daysInGridFormat.push(calendarDate++);
         }
         calendarDate = 1;
-        while (calendarDaysFormat.length < 42) {
-            calendarDaysFormat.push(calendarDate++);
+        while (daysInGridFormat.length < 42) {
+            daysInGridFormat.push(calendarDate++);
         }
-        return calendarDaysFormat;
+        return daysInGridFormat;
+    }
+    var isCurrentDay = day => {
+        return getGridFormat()[day] === todaysDate[0] 
+                && displayedMonth === todaysDate[1] 
+                && displayedYear === todaysDate[2];
+    }
+    var toggleIscurrentMonth = (status, day) => {
+        return getGridFormat()[day] === 1 ? !status : status;
+    }
+    var styleMonthColor = (isTodaysMonth, calendar, day) => {
+        isTodaysMonth ? calendar[day].style.color = "white" : 
+                calendar[day].style.color = "rgb(154, 154, 154)"
+    }
+    var changeStyleIfToday = (isTodaysMonth, calendar, day) => {
+        if (isTodaysMonth && isCurrentDay(day)) { 
+            calendar[day].classList.toggle("today");
+        } else if (isTodaysMonth && calendar[day].classList[1] === "today") {
+            calendar[day].classList.toggle("today");
+        }
     }
     var updateDates = grid => {
         let isCurrentMonth = false;
-        const calendarDays = getCalendarFormat();
-        for (let i = 0; i < 42; i++) {
-            const isCurrentDay = calendarDays[i] === todaysDate[0] && displayedMonth === todaysDate[1] 
-                    && displayedYear === todaysDate[2];
-            grid[i].innerHTML = calendarDays[i];
-            if (calendarDays[i] === 1) {
-                isCurrentMonth = !isCurrentMonth;
-            }
-            if (isCurrentMonth) {
-                if (isCurrentDay) { 
-                    grid[i].classList.toggle("today");
-                } else if (grid[i].classList[1] === "today") {
-                    grid[i].classList.toggle("today");
-                }
-            }
-            isCurrentMonth ? grid[i].style.color = "white" : grid[i].style.color = "rgb(154, 154, 154)";
+        for (let i = 0; i < getGridFormat().length; i++) {
+            grid[i].innerHTML = getGridFormat()[i];
+            isCurrentMonth = toggleIscurrentMonth(isCurrentMonth, i);
+            styleMonthColor(isCurrentMonth, grid, i);
+            changeStyleIfToday(isCurrentMonth, grid, i);
         }
     }
-    var updateHeader = monthElement => {
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
+    var getMonthNames = () => {
+        return ["January", "February", "March", "April", "May", "June", "July", "August", "September", 
                 "October", "November", "December"];
-
-        monthElement.innerHTML = (displayedYear === todaysDate[2]) ? 
-                monthNames[displayedMonth] : [monthNames[displayedMonth], displayedYear].join(" ");
+    }
+    var updateHeader = monthElement => {
+        displayedYear === todaysDate[2] ? 
+                monthElement.innerHTML = getMonthNames()[displayedMonth] : 
+                monthElement.innerHTML = [getMonthNames[displayedMonth], displayedYear].join(" ");
         displayedMonth === todaysDate[1] && displayedYear === todaysDate[2] ? 
-                monthElement.style.color = "white" : monthElement.style.color = "grey";
+                monthElement.style.color = "white" : 
+                monthElement.style.color = "grey";
+    }
+    var updateCalendarUI = () => {
+        displayedDate.setFullYear(displayedYear, displayedMonth, 1);
+        const calendarCopy = document.createDocumentFragment();
+        const oldCalendar = document.querySelector(".simple__calendar");
+        calendarCopy.appendChild(oldCalendar.cloneNode(true));
+
+        const calendarGridCopy = calendarCopy.querySelectorAll(".calendar__dates");
+        const monthNameCopy = calendarCopy.querySelector(".calendar__month");
+        updateHeader(monthNameCopy);
+        updateDates(calendarGridCopy);
+        document.body.replaceChild(calendarCopy, oldCalendar);
+        addCalendarHandlers();
     }
     var changeToPreviousMonth = () => {
         if (displayedMonth <= 0) {
@@ -67,7 +100,7 @@ const simpleCalendar = function() {
         } else if (displayedMonth > 0) {
             displayedMonth--;
         }
-        updateCalendarInterface();
+        updateCalendarUI();
     }
     var changeToNextMonth = () => {
         if (displayedMonth >= 11) {
@@ -76,24 +109,9 @@ const simpleCalendar = function() {
         } else if (displayedMonth < 11) {
             displayedMonth++;
         }
-        updateCalendarInterface();
+        updateCalendarUI();
     }
-    var newCalendarFragment = () => {
-        const calendarNode = document.querySelector(".simple__calendar");
-        const calendarCopy = document.createDocumentFragment();
-        calendarCopy.appendChild(calendarNode.cloneNode(true));
-
-        const calendarGrid = calendarCopy.querySelectorAll(".calendar__dates");
-        const monthName = calendarCopy.querySelector(".calendar__month");
-        updateHeader(monthName);
-        updateDates(calendarGrid);
-        return calendarCopy;
-    }
-    var updateCalendarInterface = () => {
-        const calendarNode = document.querySelector(".simple__calendar");
-        const updatedNode = newCalendarFragment();
-        document.body.replaceChild(updatedNode, calendarNode);
-
+    var addCalendarHandlers = () => {
         const calendarHeader = document.querySelector(".calendar__header");
         calendarHeader.addEventListener("click", event => {
             if (event.target.id === "last__month" || event.target.id === "last__month__bar") {
@@ -142,10 +160,11 @@ const simpleCalendar = function() {
                 </div>
             </div>`;
     }
-    this.createCalendar = () => {
+    (() => {
         document.querySelector(".simple__calendar").innerHTML = getCalendarHtml();
-        updateCalendarInterface();
-    }
+        updateCalendarUI();
+        addCalendarHandlers();
+    })();
 }
 
 export { simpleCalendar };
