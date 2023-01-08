@@ -166,10 +166,12 @@ const simpleStopwatch = function() {
         });
     }
     this.createStopwatch = () => {
+        console.log(123);
         createStopwatchHtml();
         addHandlers();
     }
     this.removeHandlers = () => {
+        console.log(123);
         document.removeEventListener("keydown", onEnterKeyHandler);
     }
 }

@@ -5,9 +5,8 @@ import { simpleStopwatch } from "./modules/stopwatch.js";
 
 const calendar = new simpleCalendar();
 const stopwatch = new simpleStopwatch();
-const mainClock = new simpleTimer();
-console.log(mainClock);
-mainClock.createClockUI();
+const timer = new simpleTimer();
+timer.createClockUI();
 
 var playMusic = () => {
     let audio = new Audio("./images_sound/alarm.mp3");
@@ -16,7 +15,7 @@ var playMusic = () => {
     //     document.querySelector(".play__button").classList.toggle("active");
     // } needs to be replaced now that we are using circle
 }
-mainClock.onTimerEnd = playMusic;
+timer.onTimerEnd = playMusic;
 
 var toggleMobileMenu = () => {
     const navbarMenu = document.querySelector("#navbar__menu").classList.toggle("active");
@@ -43,23 +42,22 @@ var swapIcons = event => {
     event.target.classList.toggle("active");
 }
 var removeOldFunctionality = () => {
-    const timerContainer = document.querySelector(".simple__timer");
-    const stopwatchContainer = document.querySelector(".simple__stopwatch");
-    const calendarContainer = document.querySelector(".simple__calendar");
-
-    if (timerContainer && timerContainer.firstChild) {
-        timerContainer.replaceChildren();
-    } else if (stopwatchContainer && stopwatchContainer.firstChild) {
-        stopwatchContainer.replaceChildren();
-    } else if (calendarContainer && calendarContainer.firstChild) {
-        calendarContainer.replaceChildren();
+    const timerNode = document.querySelector(".simple__timer");
+    const stopwatchNode = document.querySelector(".simple__stopwatch");
+    const calendarNode = document.querySelector(".simple__calendar");
+    if (timerNode.firstChild) {
+        timerNode.replaceChildren();
+        timer.removeHandlers();
+    } else if (stopwatchNode.firstChild) {
+        stopwatchNode.replaceChildren();
+        stopwatch.removeHandlers();
+    } else if (calendarNode.firstChild) {
+        calendarNode.replaceChildren();
     }
-    mainClock.removeHandlers();
-    stopwatch.removeHandlers();
 }
 var getNewFunctionality = event => {
     if (event.target.id === "clock__selector") {
-        mainClock.createClockUI();
+        timer.createClockUI();
     } else if (event.target.id === "stopwatch__selector") {
         stopwatch.createStopwatch();
     } else {

@@ -160,11 +160,11 @@ const simpleCalendar = function() {
                 </div>
             </div>`;
     }
-    (() => {
+    this.createCalendar = () => {
         document.querySelector(".simple__calendar").innerHTML = getCalendarHtml();
         updateCalendarUI();
         addCalendarHandlers();
-    })();
+    }
 }
 
 export { simpleCalendar };
