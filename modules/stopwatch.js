@@ -20,7 +20,7 @@ const simpleStopwatch = function() {
     var getClearBtnClass = () => {
         return !hasStarted ? "clear__stopwatch" : "clear__stopwatch active";
     }
-    var getStartBtnClass = getStartBtn => {
+    var getStartBtnClass = () => {
         if (hasStarted && !isActive) {
             return "toggle__start has__started";
         } else {
@@ -133,7 +133,7 @@ const simpleStopwatch = function() {
     })();
     var pause = () => {
         secondsBeforePause = secondsSinceStart;
-        isActive ? isActive = false : stopwatchLoop();
+        isActive = false;
         toggleBtnStyle(); 
     }
     var start = () => { 

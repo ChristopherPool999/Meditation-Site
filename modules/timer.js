@@ -8,22 +8,24 @@ const simpleTimer = function() {
     let isActive = false;
     let hasStarted = false;
 
-    var updateTimerValues = reformatTimerValues => {
-        if (timerValues[5] === 0 || reformatTimerValues) {
-            const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1];
-            // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds. Ex: 09 : 17: 36
-            let secondsCopy = secondsLeft;
-            let newTimer = [0, 0, 0, 0, 0, 0];
-            for (let i = 0; i < newTimer.length; i++) {
-                if (secondsCopy >= timerUnitsAsSeconds[i]) {
-                    newTimer[i] = Math.floor(secondsCopy / timerUnitsAsSeconds[i]);
-                    secondsCopy = secondsCopy % timerUnitsAsSeconds[i];
-                }
+
+    var getTimeMeasurements = i => {
+        // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds.
+        return [36000, 3600, 600, 60, 10, 1][i];
+    }
+    var reconfigureTime = () => { 
+        let secondsCopy = secondsLeft;
+        let newTimer = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < newTimer.length; i++) {
+            if (secondsCopy >= getTimeMeasurements(i)) {
+                newTimer[i] = Math.floor(secondsCopy / getTimeMeasurements(i));
+                secondsCopy = secondsCopy % getTimeMeasurements(i);
             }
-            timerValues = newTimer;
-        } else {
-            timerValues[5]--;
         }
+        timerValues = newTimer;
+    }
+    var updateTimerValues = timerJustSet => {
+        timerValues[5] === 0 || timerJustSet ? reconfigureTime() : timerValues[5]--;
     }   
     var getTimeLeftFormatted = () => {
         return "" + timerValues[0] +  timerValues[1] +  ":" + timerValues[2] + timerValues[3] 
@@ -36,11 +38,45 @@ const simpleTimer = function() {
         isEmpty = true;
         hasStarted = false;
     }
-    var resetTimer = () => { 
-        resetProperties();
-        if (document.querySelector(".simple__timer").firstChild) {
+    var isTimerUIActive = () => {
+        return document.querySelector(".simple__timer").firstChild;
+    }
+    var addHandlersIfActive = () => {
+        document.querySelector(".started__timer__buttons__container").addEventListener("click", event => {
+            if (event.target.classList[0] === "toggle__timer") {
+                isActive ? pause() : startTimer();
+            } else if (event.target.classList[0] === "clear__timer") {
+                resetTimer();
+            }
+        })
+    }
+    var addHandlersIfUnstarted = () => {
+        document.querySelector(".timer__container").addEventListener("click", event => {
+            let target = event.target.classList[0];
+            let timerKey = event.target.innerHTML;
+            if (target === "number__button" && canAddTime(timerKey)) {
+                addTime(timerKey);
+            } else if (target === "clear__button" && !isEmpty) {
+                resetTimer();
+            } else if (target === "start__button" && !isEmpty && !isActive) {
+                startTimer();
+            }
+        });
+    }
+    var replaceEventHandlers = () => {
+        this.removeHandlers();
+        document.addEventListener("keydown", onKeyPressHandler);
+        isActive ? addHandlersIfActive() : addHandlersIfUnstarted();
+    }
+    var resetTimer = () => {
+        if (!hasStarted && isTimerUIActive()) {
+            resetProperties();
             document.querySelector(".start__button").classList.toggle("active");
-            document.querySelector(".time").innerHTML = getTimeLeftFormatted();
+            document.querySelector(".time").innerHTML = "00:00:00";
+        } 
+        if (hasStarted && isTimerUIActive()) {
+            resetProperties();  
+            document.querySelector(".simple__timer").innerHTML = getUnstartedTimerUI();
             replaceEventHandlers();
         }
     }  
@@ -55,21 +91,17 @@ const simpleTimer = function() {
             .getElementById("base-timer-path-remaining")
             .setAttribute("stroke-dasharray", circleDashArray);
     }
-    var countDown = (() => {
-        let clockLoop = null;
-        return () => {
+    var countDown = () => {
             setTimeout(() => { // so it isnt immediately rendered and will still get transtion effect 
                 setCircleDashArray();
             }, 1);
-            if (clockLoop === null) {
-                clockLoop = setInterval(() => {
+                let clockLoop = setInterval(() => {
                     if (!isActive) {
                         clearInterval(clockLoop);
-                        clockLoop = null;
                     } else {
                         secondsLeft--;
                         updateTimerValues();
-                        if (document.querySelector(".simple__timer").firstChild) {
+                        if (isTimerUIActive()) {
                             document.querySelector(".base-timer__label").innerHTML = getTimeLeftFormatted();
                             if (secondsLeft !== 0) {
                                 setCircleDashArray();   
@@ -82,8 +114,6 @@ const simpleTimer = function() {
                     }
                 }, 1000);
             }
-        }
-    })();
     var canAddTime = input => {
         return !isNaN(parseInt(input)) 
                 && !hasStarted 
@@ -97,7 +127,7 @@ const simpleTimer = function() {
         isEmpty = false;
         timerValues.shift();
         timerValues.push(input);
-        if (document.querySelector(".simple__timer").firstChild) {
+        if (isTimerUIActive()) {
             document.querySelector(".time").innerHTML = getTimeLeftFormatted();
         }
     }
@@ -113,15 +143,13 @@ const simpleTimer = function() {
             }
         }
     })();
-    var pauseTimer = () => {
+    var pause = () => {
         isActive ? isActive = false : countDown();
     }
     var getTimerLength = () => {
-        const timerUnitsAsSeconds = [36000, 3600, 600, 60, 10, 1];
-        // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds. Ex: 09 : 17: 36
         let totalSeconds = 0;
         for (let i = 0; i < timerValues.length; i++) {
-            totalSeconds += timerValues[i] * timerUnitsAsSeconds[i];
+            totalSeconds += timerValues[i] * getTimeMeasurements(i);
         }
         return totalSeconds;
     }
@@ -169,15 +197,15 @@ const simpleTimer = function() {
                 + `</div>`;
     }
     var startTimer = () => {
-        if (!hasStarted) {
-            replaceEventHandlers();
-        }
+        isActive = true;
         timerLength = getTimerLength();
         secondsLeft = timerLength;
         updateTimerValues(true);
-        isActive = true;
+        if (!hasStarted) {
+            document.querySelector(".simple__timer").innerHTML = getActiveTimerUI();
+            replaceEventHandlers();
+        }
         hasStarted = true;
-        document.querySelector(".simple__timer").innerHTML = getActiveTimerUI();
         countDown();
     }
     var onKeyPressHandler = input => {
@@ -186,7 +214,7 @@ const simpleTimer = function() {
         } else if (input.code === "Backspace" && !isEmpty) {
             confirmResetButton();
         } else if (input.code === "Space" && hasStarted) {
-            pauseTimer();
+            pause();
         } else if (input.key === "Enter" && !isEmpty && !isActive) {
             startTimer();
         }
@@ -213,28 +241,6 @@ const simpleTimer = function() {
                     <button class="number__button">0</button>
                 </div>
             </div>`;
-    }
-    // still being implemented
-    var addHandlersIfActive = () => {
-
-    }
-    var addHandlersIfUnstarted = () => {
-        document.querySelector(".timer__container").addEventListener("click", event => {
-            let target = event.target.classList[0];
-            let timerKey = event.target.innerHTML;
-            if (target === "number__button" && canAddTime(timerKey)) {
-                addTime(timerKey);
-            } else if (target === "clear__button" && !isEmpty) {
-                resetTimer();
-            } else if (target === "start__button" && !isEmpty && !isActive) {
-                startTimer();
-            }
-        });
-    }
-    var replaceEventHandlers = () => {
-        this.removeHandlers();
-        document.addEventListener("keydown", onKeyPressHandler);
-        isActive ? addHandlersIfActive() : addHandlersIfUnstarted();
     }
     this.createClockUI = () => {
         document.addEventListener("keydown", onKeyPressHandler);
