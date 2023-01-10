@@ -1,20 +1,22 @@
 "use strict";
 
 const simpleTimer = function() {
-    let timerValues = [0, 0, 0, 0, 0, 0];
+    let timerValues = [0, 0, 0, 0, 0, 0]; 
     let timerLength = 0;
-    let secondsLeft = 0;
+    let startedTime = null;
+    let secondsBeforePause = 0;
+    let secondsSinceStart = 0;
+    let recordedSeconds = 0;  
     let isEmpty = true;
     let isActive = false;
     let hasStarted = false;
-
 
     var getTimeMeasurements = i => {
         // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds.
         return [36000, 3600, 600, 60, 10, 1][i];
     }
     var reconfigureTime = () => { 
-        let secondsCopy = secondsLeft;
+        let secondsCopy = Math.ceil(this.getTimeLeft());
         let newTimer = [0, 0, 0, 0, 0, 0];
         for (let i = 0; i < newTimer.length; i++) {
             if (secondsCopy >= getTimeMeasurements(i)) {
@@ -34,9 +36,12 @@ const simpleTimer = function() {
     var resetProperties = () => {
         timerValues = [0, 0, 0, 0, 0, 0];
         isActive = false;
-        secondsLeft = 0;
         isEmpty = true;
         hasStarted = false;
+        startedTime = null;
+        secondsBeforePause = 0;
+        secondsSinceStart = 0;
+        recordedSeconds = 0;  
     }
     var isTimerUIActive = () => {
         return document.querySelector(".simple__timer").firstChild;
@@ -81,8 +86,8 @@ const simpleTimer = function() {
         }
     }  
     var getPercentTimeLeft = () => {
-        // circle is always 1 second early to account for 1 second transition effect. 
-        return (secondsLeft - 1) / timerLength;
+        // circle is always .1 second early to account for .1 second transition effect. 
+        return (this.getTimeLeft() - .1) / timerLength;
     }
     var setCircleDashArray = () => {
         const TimeLeftDasharray = Math.round(getPercentTimeLeft() * 283);
@@ -91,29 +96,38 @@ const simpleTimer = function() {
             .getElementById("base-timer-path-remaining")
             .setAttribute("stroke-dasharray", circleDashArray);
     }
+    var didSecondPass = () => {
+        return Math.floor(getTimePassed()) > Math.floor(recordedSeconds);
+    }
+    var updateActiveTimerUI = () => {
+        document.querySelector(".base-timer__label").innerHTML = getTimeLeftFormatted();
+        if (this.getTimeLeft() !== 0) {
+            setCircleDashArray();   
+        }
+    }
+    var runIfInterfaceActive = callback => {
+        if (document.querySelector(".simple__timer").firstChild) {
+            callback();
+        }
+    }
     var countDown = () => {
-            setTimeout(() => { // so it isnt immediately rendered and will still get transtion effect 
-                setCircleDashArray();
-            }, 1);
-                let clockLoop = setInterval(() => {
-                    if (!isActive) {
-                        clearInterval(clockLoop);
-                    } else {
-                        secondsLeft--;
+            let clockLoop = setInterval(() => {
+                if (!isActive) {
+                    clearInterval(clockLoop);
+                } else {
+                    secondsSinceStart = (Date.now() - startedTime) / 1000;
+                    if (didSecondPass()) {
                         updateTimerValues();
-                        if (isTimerUIActive()) {
-                            document.querySelector(".base-timer__label").innerHTML = getTimeLeftFormatted();
-                            if (secondsLeft !== 0) {
-                                setCircleDashArray();   
-                            }
-                        }
-                        if (secondsLeft === 0) {
-                            this.onTimerEnd();
-                            resetTimer();
-                        }
                     }
-                }, 1000);
-            }
+                    recordedSeconds = Math.floor(getTimePassed());
+                    runIfInterfaceActive(updateActiveTimerUI);
+                    if (this.getTimeLeft() === 0) {
+                        this.onTimerEnd();
+                        resetTimer();
+                    }
+                }
+            }, 100);
+    }
     var canAddTime = input => {
         return !isNaN(parseInt(input)) 
                 && !hasStarted 
@@ -197,14 +211,21 @@ const simpleTimer = function() {
                 + `</div>`;
     }
     var startTimer = () => {
+        if (!hasStarted) {
+            timerLength = getTimerLength();
+        }
         isActive = true;
-        timerLength = getTimerLength();
-        secondsLeft = timerLength;
         updateTimerValues(true);
+        secondsBeforePause = getTimePassed();
+        secondsSinceStart = 0;
         if (!hasStarted) {
             document.querySelector(".simple__timer").innerHTML = getActiveTimerUI();
             replaceEventHandlers();
+            setTimeout(() => { // so it isnt immediately rendered and will still get transtion effect 
+                setCircleDashArray();
+            }, 1);
         }
+        startedTime = Date.now();
         hasStarted = true;
         countDown();
     }
@@ -242,6 +263,9 @@ const simpleTimer = function() {
                 </div>
             </div>`;
     }
+    var getTimePassed = () => {
+        return secondsBeforePause + secondsSinceStart;
+    }
     this.createClockUI = () => {
         document.addEventListener("keydown", onKeyPressHandler);
         document.querySelector(".simple__timer").innerHTML = (isActive) ? getActiveTimerUI() : getUnstartedTimerUI();
@@ -257,7 +281,8 @@ const simpleTimer = function() {
         return isActive;
     }
     this.getTimeLeft = () => {
-        return secondsLeft;
+        const timePassed = timerLength - getTimePassed()
+        return timePassed < 0 ? 0 : timePassed;
     }
 }
 export { simpleTimer };

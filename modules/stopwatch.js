@@ -97,7 +97,9 @@ const simpleStopwatch = function() {
         UIValues[5] === 9 ? reconfigureTime() : UIValues[5]++;
     }   
     var didSecondPass = () => {
-        return Math.floor(secondsSinceStart) !== recordedSeconds;
+        const result = Math.floor(secondsSinceStart) !== recordedSeconds;
+        recordedSeconds = Math.floor(secondsSinceStart);
+        return result;
     }
     var stopwatchLoop = () => {
             let loopID = setInterval(() => {
@@ -109,7 +111,6 @@ const simpleStopwatch = function() {
                         updateTimeValues();
                         runIfInterfaceActive(updateMainTimeUI);
                     }
-                    recordedSeconds = Math.floor(secondsSinceStart);
                     runIfInterfaceActive(updateMillisUI);   
                 }
             }, 8);
