@@ -75,23 +75,10 @@ const simpleCalendar = function() {
     var updateHeader = monthElement => {
         displayedYear === todaysDate[2] ? 
                 monthElement.innerHTML = getMonthNames()[displayedMonth] : 
-                monthElement.innerHTML = [getMonthNames[displayedMonth], displayedYear].join(" ");
+                monthElement.innerHTML = [getMonthNames()[displayedMonth], displayedYear].join(" ");
         displayedMonth === todaysDate[1] && displayedYear === todaysDate[2] ? 
                 monthElement.style.color = "white" : 
                 monthElement.style.color = "grey";
-    }
-    var updateCalendarUI = () => {
-        displayedDate.setFullYear(displayedYear, displayedMonth, 1);
-        const calendarCopy = document.createDocumentFragment();
-        const oldCalendar = document.querySelector(".simple__calendar");
-        calendarCopy.appendChild(oldCalendar.cloneNode(true));
-
-        const calendarGridCopy = calendarCopy.querySelectorAll(".calendar__dates");
-        const monthNameCopy = calendarCopy.querySelector(".calendar__month");
-        updateHeader(monthNameCopy);
-        updateDates(calendarGridCopy);
-        document.body.replaceChild(calendarCopy, oldCalendar);
-        addCalendarHandlers();
     }
     var changeToPreviousMonth = () => {
         if (displayedMonth <= 0) {
@@ -121,6 +108,19 @@ const simpleCalendar = function() {
                 changeToNextMonth();
             }
         });
+    }
+    var updateCalendarUI = () => {
+        displayedDate.setFullYear(displayedYear, displayedMonth, 1);
+        const calendarCopy = document.createDocumentFragment();
+        const oldCalendar = document.querySelector(".simple__calendar");
+        calendarCopy.appendChild(oldCalendar.cloneNode(true));
+
+        const calendarGridCopy = calendarCopy.querySelectorAll(".calendar__dates");
+        const monthNameCopy = calendarCopy.querySelector(".calendar__month");
+        updateHeader(monthNameCopy);
+        updateDates(calendarGridCopy);
+        document.body.replaceChild(calendarCopy, oldCalendar);
+        addCalendarHandlers();
     }
     var getCalendarHtml = () => {
         return `
@@ -163,7 +163,6 @@ const simpleCalendar = function() {
     this.createCalendar = () => {
         document.querySelector(".simple__calendar").innerHTML = getCalendarHtml();
         updateCalendarUI();
-        addCalendarHandlers();
     }
 }
 

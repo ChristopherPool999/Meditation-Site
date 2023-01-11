@@ -8,15 +8,6 @@ const stopwatch = new simpleStopwatch();
 const timer = new simpleTimer();
 timer.createClockUI();
 
-var playMusic = () => {
-    let audio = new Audio("./images_sound/alarm.mp3");
-    // audio.play();
-    // if (document.querySelector(".simple__timer").firstChild) {
-    //     document.querySelector(".play__button").classList.toggle("active");
-    // } needs to be replaced now that we are using circle
-}
-timer.onTimerEnd = playMusic;
-
 var toggleMobileMenu = () => {
     const navbarMenu = document.querySelector("#navbar__menu").classList.toggle("active");
     const mobileDropdown = navbar.querySelector(".navbar__toggle").classList.toggle("active");
@@ -72,20 +63,18 @@ document.querySelector(".feature__selector").addEventListener("click", event => 
     }
 });
 
-// figure out accessability and why they keep fucking up my buttons
 
-// need to remember why we changed the settime to be before everything else, pretty sure there was a bug but it doesnt happen now?
-// gotta add opitimation for query selector
-// gotta also change all event listeners to be on specific nodes
-
-// make it so there is animation when either alarm or stopwatch is running and so you will be able to tell while not on that screen
-// a hourglass with sand would be a cool idea for the timer function. 
-
-// add calendar and tracking
-// implement log data button
-// cookies to save user information
 // functionality for FAQ, login, about
-// light dark mode
+// maybe save notes for calendar
+// would require cookies, and then we have a reason for the login 
+
 
 // make responsive
 // make it better looking --- look into UX design and other timer designs 
+
+// post application internship
+////// -----------------------------
+
+
+// gotta add opitimation for query selector
+// gotta also change all event listeners to be on specific nodes
