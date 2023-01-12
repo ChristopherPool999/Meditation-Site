@@ -6,18 +6,24 @@ const simpleTimer = function() {
     let startedTime = null;
     let secondsBeforePause = 0;
     let secondsSinceStart = 0;
-    let recordedSeconds = 0;  
-    let isEmpty = true;
+    let recordedSeconds = 0;     
     let isActive = false;
-    let hasStarted = false;
     let keyListenerRef = null;
 
     var getTimeWithColons = () => {
         return "" + timerUIasArr[0] +  timerUIasArr[1] +  ":" + timerUIasArr[2] + timerUIasArr[3] 
                 + ":" + timerUIasArr[4] +  timerUIasArr[5];
     }
+    var isTimerEmpty = () => {
+        for (let i = 0; i < timerUIasArr.length; i++) {
+            if (timerUIasArr[i] !== 0) {
+                return false;
+            }
+        }
+        return true;
+    }
     var getUnbegunTimerHtml = () => {
-        let startButtonClassName = isEmpty ? "start__button" : "start__button active";
+        let startButtonClassName = isTimerEmpty() ? "start__button" : "start__button active";
         return `
             <div class="timer__container">
                 <div class="timer">
@@ -40,35 +46,53 @@ const simpleTimer = function() {
                 <div class="timer__end__notification"></div>
             </div>`;
     }
-    var updateUserInputUI = () => {
-        document.querySelector(".time").innerHTML = getTimeWithColons();
+    var getPercentTimeLeft = () => {
+        // circle is always .1 second early to account for .1 second transition effect. 
+        const timeAfterAdjustment = (this.getTimeLeft() - .1) > 0 ? this.getTimeLeft() - .1 : 0; 
+        return timeAfterAdjustment / timerLength;
+    }
+    var setCircleDashArray = () => {
+        const TimeLeftDasharray = Math.round(getPercentTimeLeft() * 283);
+        const circleDashArray = `${TimeLeftDasharray} 283`;
+        document
+            .getElementById("base-timer-path-remaining")
+            .setAttribute("stroke-dasharray", circleDashArray);
     }
     var canInputTime = input => {
         return !isNaN(parseInt(input)) 
                 && timerUIasArr[0] === 0 
-                && (!isEmpty || input !== "0");
+                && (!isTimerEmpty() || input !== "0");
     }  
+    var updateInterface = (node, html) => {
+        document.querySelector(node).innerHTML = html;
+    }
     var inputTime = input => {
-        if (isEmpty){
+        if (isTimerEmpty()){
             document.querySelector(".start__button").classList.toggle("active");
-            isEmpty = false;
         }
         timerUIasArr.shift();
         timerUIasArr.push(input);
-        updateUserInputUI();
+        updateInterface(".time", getTimeWithColons());
+    }
+    var resetProperties = () => {
+        timerUIasArr = [0, 0, 0, 0, 0, 0];
+        isActive = false;
+        secondsBeforePause = 0;
+        secondsSinceStart = 0;
+        recordedSeconds = 0; 
+        timerLength = 0;
+        startedTime = null;
     }
     var clearInput = () => {
-        timerUIasArr = [0, 0, 0, 0, 0 ,0];
-        isEmpty = true;
-        timerLength = 0;
-        updateUserInputUI();
+        resetProperties();
+        updateInterface(".time", getTimeWithColons());        
         document.querySelector(".start__button").classList.toggle("active");
     }
     var getTimeMeasurements = i => {
         // units of a clock (10hour, 1hour, 10min, 1min, 10sec 1sec) converted to all be in seconds.
         return [36000, 3600, 600, 60, 10, 1][i];
     }
-    var getTimeRemaining = () => {
+    var getTimerLength = () => {
         let totalSeconds = 0;
         for (let i = 0; i < timerUIasArr.length; i++) {
             totalSeconds += timerUIasArr[i] * getTimeMeasurements(i);
@@ -86,14 +110,6 @@ const simpleTimer = function() {
             }
         }
         timerUIasArr = newTimer;
-    }
-    var updateTimerValues = timerInitiated => {
-        timerUIasArr[5] === 0 || timerInitiated ? reconfigureTime() : timerUIasArr[5]--;
-    }
-    var getPercentTimeLeft = () => {
-        // circle is always .1 second early to account for .1 second transition effect. 
-        const timeAfterAdjustment = (this.getTimeLeft() - .1) > 0 ? this.getTimeLeft() - .1 : 0; 
-        return timeAfterAdjustment / timerLength;
     }
     var activeTimerCircleHtml = () => {
         return `<div class="base-timer">
@@ -139,51 +155,39 @@ const simpleTimer = function() {
     var didSecondPass = () => {
         return Math.floor(getTimePassed()) > Math.floor(recordedSeconds);
     }
-    var setCircleDashArray = () => {
-        const TimeLeftDasharray = Math.round(getPercentTimeLeft() * 283);
-        const circleDashArray = `${TimeLeftDasharray} 283`;
-        document
-            .getElementById("base-timer-path-remaining")
-            .setAttribute("stroke-dasharray", circleDashArray);
-    }
-    var updateActiveTimerUI = () => {
-        document.querySelector(".base-timer__label").innerHTML = getTimeWithColons();
-        if (this.getTimeLeft() !== 0) {
-            setCircleDashArray();   
-        }
-    }
     var countDown = () => {
+        isActive = true;
+        startedTime = Date.now();
         let clockLoop = setInterval(() => {
-            if (false) {
+            if (!isActive) {
                 clearInterval(clockLoop);
             } else {
                 secondsSinceStart = (Date.now() - startedTime) / 1000;
                 if (didSecondPass()) {
-                    updateTimerValues();
+                    timerUIasArr[5] === 0 ? reconfigureTime() : timerUIasArr[5]--;
                 }
                 recordedSeconds = Math.floor(getTimePassed());
                 if (document.querySelector(".simple__timer").firstChild) {
-                    updateActiveTimerUI()
+                    document.querySelector(".base-timer__label").innerHTML = getTimeWithColons();
+                    setCircleDashArray(); 
                 }
                 if (this.getTimeLeft() === 0) {
                     // this.onTimerEnd();
+                    resetTimer();
                     timerFinish();
                 }
             }
         }, 100);
     }
     var beginTimer = () => {
-        hasStarted = true;
-        isActive = true;
-        startedTime = Date.now();
-        timerLength = getTimeRemaining();
-        updateTimerValues(true);
-        document.querySelector(".simple__timer").innerHTML = getStartedTimerHtml();
+        timerLength = getTimerLength();
+        reconfigureTime();
+        updateInterface(".simple__timer", getStartedTimerHtml());
         setTimeout(() => { 
             setCircleDashArray(); // 1 sec delay to trigger reflow and get a transition effect
         }, 1);
-        replaceEventHandlers();
         countDown();
+        replaceEventHandlers();
     }
     var confirmBackKey = (() => {
         let resetAttempts = 0;
@@ -197,18 +201,9 @@ const simpleTimer = function() {
             }
         }
     })();
-    var resetProperties = () => {
-        timerUIasArr = [0, 0, 0, 0, 0, 0];
-        isActive = false;
-        isEmpty = true;
-        hasStarted = false;
-        secondsBeforePause = 0;
-        recordedSeconds = 0; 
-        timerLength = 0; 
-    }
     var resetTimer = () => {
         resetProperties();
-        document.querySelector(".simple__timer").innerHTML = getUnbegunTimerHtml();
+        updateInterface(".simple__timer", getUnbegunTimerHtml());
         replaceEventHandlers();
     }  
     var toggleActiveButtonStyle = () => {
@@ -221,34 +216,35 @@ const simpleTimer = function() {
         if (this.getTimeLeft() <= .1) { // edge case for pausing near end of timer since 
             return;                     // timer is delayed by .1s for transition effect to be accurate
         }
-        isActive = false();
-        toggleActiveButtonStyle;
+        isActive = false;
+        toggleActiveButtonStyle();
     }
     var resumeTimer = () => {
-        isActive = true;
+        countDown();
         secondsBeforePause = getTimePassed();
         secondsSinceStart = 0;
-        startedTime = Date.now();
-        toggleActiveButtonStyle;
-        countDown();
+        toggleActiveButtonStyle();
+    }
+    var isTimerStarted = () => {
+        return startedTime === null ? false : true; 
     }
     var unbegunTimerOnClick = e => {
         let target = e.target;
         let targetText = target.innerHTML;
         if (canInputTime(targetText)) {
             inputTime(targetText);
-        } else if (target.classList[0] === "clear__button" && !isEmpty) {
+        } else if (target.classList[0] === "clear__button" && !isTimerEmpty()) {
             clearInput();
-        } else if (target.classList[0] === "start__button" && !isEmpty && !isActive) {
+        } else if (target.classList[0] === "start__button" && !isTimerEmpty() && !isActive) {
             beginTimer();
         }
     }
     var unbegunTimerOnKey = e => {
         if (canInputTime(e.key)) {
             inputTime(parseInt(e.key));
-        } else if (e.key === "Backspace" && !isEmpty) {
+        } else if (e.key === "Backspace" && !isTimerEmpty()) {
             confirmBackKey(clearInput);
-        } else if (e.key === "Enter" && !isEmpty && !isActive) {
+        } else if (e.key === "Enter" && !isTimerEmpty() && !isActive) {
             beginTimer();
         }
     }
@@ -261,7 +257,7 @@ const simpleTimer = function() {
     }
     var startedTimerOnKey = e => {
         if (e.key === "Backspace") {
-            confirmBackKey(resetTimer());
+            confirmBackKey(resetTimer);
         } else if (e.key === "Spacebar" && isActive) {
             pause();
         } else if (e.key === "Enter" && !isActive) {
@@ -269,7 +265,7 @@ const simpleTimer = function() {
         }
     }
     var addlisteners = () => {
-        if (!hasStarted) {
+        if (!isTimerStarted()) {
             document.querySelector(".timer__container").addEventListener("click", unbegunTimerOnClick);
             keyListenerRef = unbegunTimerOnKey;
             document.addEventListener("keydown", keyListenerRef);
@@ -284,7 +280,7 @@ const simpleTimer = function() {
         addlisteners();
     }
     this.createClockUI = () => {
-        document.querySelector(".simple__timer").innerHTML = (hasStarted ? getStartedTimerHtml() : getUnbegunTimerHtml());
+        updateInterface(".simple__timer", (isTimerStarted() ? getStartedTimerHtml() : getUnbegunTimerHtml()));
         addlisteners();
     }
     this.removeHandlers = () => {
@@ -302,3 +298,5 @@ const simpleTimer = function() {
     }
 }
 export { simpleTimer };
+
+// can get rid of entire array by just modifying the html instead and then use the innerHTML of the timer to find the new value. 
