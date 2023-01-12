@@ -106,7 +106,7 @@
     transform: translateY(320px);
 }
 
-.toggle__timer {
+.toggle__timer__btn {
     height: 50px;
     width: 80px;
     border: .5px;
@@ -120,11 +120,11 @@
     z-index: 2;
 }
 
-.toggle__timer.active {
+.toggle__timer__btn.active {
     background-color: rgb(121, 30, 12);
 }
 
-.clear__timer {
+.clear__timer__btn {
     height: 50px;
     width: 80px;
     transition: all 0.5s ease-in-out;
